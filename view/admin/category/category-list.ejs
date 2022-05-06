@@ -1,0 +1,190 @@
+<%- include('../header') %>
+    
+    
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Danh sách danh mục</h5>
+                </div>
+                <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Mã danh mục</th>
+                            <th>Tên danh mục</th>
+                            <th colspan="2">Chức năng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    <% if (data && data.length > 0) { %>
+                        <% data.forEach((item, index) => { %>
+                            <tr>
+                                <td><%= ++index %> </td>
+                                <th><%= item['id'] %> </th>
+                                <td><%= item['name'] %></td>
+                                <td><button data-id="<%= item['id'] %>" class="btn btn-primary btn-update">Update</button></td>
+                                <td><button data-id="<%= item['id'] %>" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal-delete">Delete</button></td>
+                            </tr>
+
+                        <% }) %> 
+
+                     <% } %>    
+                     
+                    </tbody>
+                    </table>
+
+                    <%- pagination %> 
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Close admin-wrapper -->
+</div>
+
+<!-- Modal Confirm Delete -->
+<div class="modal fade" id="modal-delete" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Xóa sản phẩm?</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Bạn có chắc muốn xóa danh mục này không?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <button type="button" class="btn btn-danger btn-confirm-delete">Xóa</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="container-box-update">
+    <div class="box-content">
+        <div class="header">
+            <h5 class="card-title">Chỉnh sửa danh mục</h5>
+            <i class="btn-close"></i>
+        </div>
+        <div class="box-body">
+            <form action="category/update" method="POST" id="form-update"> 
+                <div class="row">
+                    <div class="col-xl-6">
+                        <label for="" class="form-label">Mã danh mục</label>
+                        <input readonly name="categoryId" required type="text" class="form-control" value="Mã danh mục">
+                    </div>
+                    <div class="col-xl-6">
+                        <label for="" class="form-label">Tên danh mục</label>
+                        <input name="name" required type="text" class="form-control" value="Tên danh mục">
+                    </div>
+                    <div class="col-xl-6">
+                        <label for="" class="form-label">Đường dẫn</label>
+                        <input readonly name="categorySlug" required type="text" class="form-control" value="Đường dẫn (slug)">
+                    </div>
+    
+                    <div class="col-xl-6">
+                        <label for="" class="form-label">Danh mục cha</label>
+                        <input name="parentId" type="text" class="form-control" placeholder="Danh mục cha">
+                    </div>
+                    
+                </div>
+                
+                <button type="submit" name="submit-add-category" class="btn btn-danger mt-3">Lưu</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { toSlug, removeDuplicateSpaceAndTrim } from '/js/validate.js'
+
+    const btnUpdate = document.querySelectorAll('.btn-update')
+    const containerUpdate = document.querySelector('.container-box-update')
+    const btnClose = containerUpdate.querySelector('.btn-close')
+    const inputElements = document.querySelectorAll('#form-update input')
+
+    const categoryNameElement = document.querySelector('#form-update input[name="name"]')
+    const categoryIdElement = document.querySelector('#form-update input[name="categoryId"]')
+    const categorySlugElement = document.querySelector('#form-update input[name="categorySlug"]')
+    const categoryParent = document.querySelector('#form-update input[name="parentId"]')
+
+    const modalDelete = document.getElementById('modal-delete')
+    const btnConfirmDelete = document.querySelector('.btn-confirm-delete')
+
+    modalDelete.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget
+      
+        const categoryId = button.getAttribute('data-id')
+
+        btnConfirmDelete.setAttribute('data-id', categoryId)
+
+    })
+
+    btnConfirmDelete.addEventListener('click', function() {
+        const categoryId = this.getAttribute('data-id')
+        callApiDeleteCategory(categoryId)
+
+    })
+
+    btnUpdate.forEach((btn) => {
+        btn.addEventListener('click', function() {
+            const categoryId = this.getAttribute('data-id')
+
+            fetch(`/api/v1/category/${categoryId}`)
+                .then(res => res.json())
+                .then(data => {
+                    const category = data.data
+                    categoryIdElement.value = category.id
+                    categoryNameElement.value = category.name
+                    categorySlugElement.value = category.slug
+                    categoryParent.value = category.parent_id
+
+                    containerUpdate.classList.add('active')
+                })
+
+        })
+    })
+
+    btnClose.addEventListener('click', function() {
+        containerUpdate.classList.remove('active')
+    })
+
+    inputElements.forEach((input) => {
+        input.addEventListener('blur', function() {
+            let inputValue = removeDuplicateSpaceAndTrim(this.value)
+            this.value = inputValue
+        })
+    })
+
+    categoryNameElement.addEventListener('blur',function() {
+        categorySlugElement.value = toSlug(categoryNameElement.value)
+    })
+
+    function callApiDeleteCategory(categoryId) {
+        $.ajax({
+            url: `/api/v1/category/${categoryId}`,
+            type: 'delete',
+            dataType: 'json',
+            success: function(result) {
+                console.log(result)
+                if (result.status == 'success') {
+                    alert('Đã xóa thành công')
+                    location.reload()
+                } else {
+                    alert('Thất bại')
+                }
+            }
+        })
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,161 @@
+<%- include('../header') %>
+    
+    <style>
+
+        .box-thumbnail {
+            display: none;
+        }
+
+        .box-thumbnail.active {
+            display: flex;
+        }
+
+        .box-thumbnail img {
+            width: 250px;
+        }
+
+        .box-update-thumbnail {
+            display: none;
+            align-items: center;
+        }
+
+        .box-update-thumbnail.active {
+            display: flex;
+        }
+
+        .btn-show-box-update {
+            display: none;
+        }
+
+        .btn-show-box-update.active {
+            display: block;
+        }
+
+        .btn-submit-update {
+            width: auto;
+        }
+
+    </style>
+
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Cập nhật hình ảnh</h5>
+                        </p>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-xl-3">
+                                <label for="" class="form-label">Mã sản phẩm</label>
+                                <input name="input-product-id" required type="text" class="form-control" placeholder="Nhập mã sản phẩm">
+                            </div>
+                            <div class="col-xl-6">
+                                <label for="" class="form-label">Sản phẩm</label>
+                                <input disabled id="product-loaded" class="form-control" placeholder="Sản phẩm">
+                            </div>
+                            
+                            <div class="col-xl-6 mt-2 box-thumbnail">
+                                <img src="" alt="" class="thumbnail">
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-danger mt-3 btn-show-box-update">Cập nhật hình ảnh</button>
+                        
+                        <form enctype="multipart/form-data" action="" method="POST" id="form-update" class="box-update-thumbnail row mt-4">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <input type="hidden" name="productId">
+                            <div class="col-xl-4">
+                                <label for="formFile" class="form-label">Cập nhật ảnh mới</label>
+                                <input required name="thumbnail" class="form-control" type="file" id="formFile">
+                            </div>
+                            <div class="col-xl-8">
+                                <img src="" alt="" class="preview-image-upload">
+                            </div>
+                            <div class="col-xl-4">
+                                <button type="submit" class="btn btn-submit-update btn-success mt-3">Cập nhật</button>
+                            </div>
+                        </form>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Close admin-wrapper -->
+</div>
+
+
+<script>
+
+
+    const inputProductIdElement = document.querySelector('input[name="input-product-id"]')
+    const productLoaded = document.getElementById('product-loaded')
+    const boxThumbnail = document.querySelector('.box-thumbnail')
+    const thumbnail = boxThumbnail.querySelector('.thumbnail')
+
+    const boxUpdateThumbnail = document.querySelector('.box-update-thumbnail')
+
+    const btnShowBoxUpdate = document.querySelector('.btn-show-box-update')
+
+    const inputUploadFile = document.querySelector('#form-update input[name="thumbnail"]')
+    const previewImageUpload = document.querySelector('.preview-image-upload')
+
+    const productIdElement = document.querySelector('input[name="productId"]')
+
+
+    inputProductIdElement.addEventListener('blur', function() {
+        loadProduct(this.value)
+    })
+
+    btnShowBoxUpdate.addEventListener('click', function() {
+        boxUpdateThumbnail.classList.toggle('active')
+    })
+
+    inputUploadFile.addEventListener('change', function(e) {
+        if (inputUploadFile.files.length > 0) {
+            const file = inputUploadFile.files[0]
+            const fileReader = new FileReader()
+            fileReader.onload = function(fileLoaderEvent) {
+                const srcImage = fileLoaderEvent.target.result
+                previewImageUpload.setAttribute('src', srcImage)
+                previewImageUpload.classList.add('active')
+            }
+            fileReader.readAsDataURL(file)
+        } else {
+            previewImageUpload.setAttribute('src', '')
+            previewImageUpload.classList.remove('active')
+        }
+    })
+
+
+    function loadProduct(productId) {
+        $.ajax({
+            url: `/api/v1/product/${productId}`,
+            type: 'get',
+            dataType: 'json',
+            success: function(result) {
+                console.log(result)
+                if (result.status == 'success') {
+                        productLoaded.value = result.product.name
+                        boxThumbnail.classList.add('active')
+                        thumbnail.setAttribute('src', result.product.thumbnail)
+                        btnShowBoxUpdate.classList.add('active')
+                        productIdElement.value = result.product.product_id
+                } else {
+                    productLoaded.value = 'Không tìm thấy'
+                    boxThumbnail.classList.remove('active')
+                    thumbnail.setAttribute('src', '')
+                    btnShowBoxUpdate.classList.remove('active')
+
+                }
+            }
+        })
+    }
+
+</script>
+
+
+</body>
+</html>

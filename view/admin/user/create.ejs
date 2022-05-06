@@ -1,0 +1,37 @@
+<%- include('../header') %>
+
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Cấp tài khoản cho nhân viên</h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="" method="POST" id="form-add"> 
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <div class="row">
+                                <div class="col-xl-3">
+                                    <label for="" class="form-label">Tên nhân viên</label>
+                                    <input name="fullName" required type="text" class="form-control" placeholder="Tên nhân viên">
+                                </div>
+                                <div class="col-xl-3">
+                                    <label for="" class="form-label">Email</label>
+                                    <input name="email" required type="text" class="form-control" placeholder="Email">
+                                </div>
+                            </div>
+                            
+                            <button type="submit" name="submit" class="btn btn-danger mt-3">Thêm</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Close admin-wrapper -->
+    </div>
+
+
+</body>
+</html>

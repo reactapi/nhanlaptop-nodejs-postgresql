@@ -1,0 +1,40 @@
+    
+    <%- include('./header') %>
+
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-xl-12 col-12 col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Thông tin tài khoản</h5>
+
+                        <div class="alert alert-block">
+                            <p></p>
+                        </div>
+    
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-xl-3 col-12 col-sm-12">
+                                <label for="" class="form-label">Email</label>
+                                <input id="email" readonly type="text" class="form-control" value="<%= user.email %>">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-3 col-12 col-sm-12">
+                                <label for="" class="form-label">Họ và tên</label>
+                                <input readonly type="text" class="form-control" value="<%= user.fullName %>">
+                            </div>
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Close admin-wrapper -->
+    </div>
+
+</body>
+</html>

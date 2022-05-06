@@ -1,0 +1,230 @@
+
+<div id="toast-container">
+    <div id="toast">
+
+        <div class="toast-content">
+            <div class="toast-icon">
+                <i class="fas fa-solid fa-check"></i>
+            </div>
+            <div class="toast-message">
+                <span class="title">Thành công!</span>
+                <span class="description">Tạo tài khoản thành công!</span>
+            </div>
+            <i class="fa-solid fa-xmark close"></i>
+            <div class="progress">
+                <div class="run"></div>
+            </div>
+        </div>
+            
+    </div>
+</div>
+ <header class="header">
+    <div class="header-top">
+        <div class="container">
+            <div class="row">
+                <div class="wrapper-logo">
+                    <!-- <a href="/"><img src="/image/logo.png" alt=""></a> -->
+                    <a href="/"><h1 class="heading-home">NHAN LAPTOP</h1></a>
+                </div>
+                <div class="wrapper-search">
+                    <form action="/tim-kiem" method="GET" class="form-search">
+                        <div class="form-group">
+                            <input type="text"  name="q" class="form-control" placeholder="Tìm kiếm sản phẩm">
+                            <button type="submit" class="submit"><i class="fas fa-search"></i> Tìm kiếm</button>
+                        </div>
+                        <div class="live-search-result">
+                            <ul class="search-result">
+    
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+               <div class="header-left">
+                    <div class="wrapper-auth">
+                        <% if (user) { 
+                            let url = 'customer'
+                            if (user.role > 0) {
+                                url = 'user'
+                            } %> 
+                            <% if (user.avatar) { %>
+                                <a href="/<%= url %>/<%= user.userId %>" class="icon-auth">
+                                    <img src="<%= user.avatar %>" alt="">
+                                </a>
+    
+                            <% } else { %>
+                                <a href="/<%= url %>/<%= user.userId %>" class="icon-auth">
+                                    <i class="fas fa-user"></i>
+                                </a>
+                            <% } %> 
+                         
+
+                        <% } else { %>  
+                            <button class="icon-auth">
+                                <i class="fas fa-user"></i>
+                            </button>
+                        <% } %> 
+                       
+                        <span>
+                            <% if (user && user.role == 0) { %> 
+                                <a href="/customer/<%= user.userId %> "><%= helper.formatFullName(user.fullName) %> </a>
+                                <a title="Đăng xuất" href="/auth/logout">Đăng xuất</a>
+
+                            <% } else if (user && user.role > 0) { %>
+                                <a href="/user/<%= user.userId %> "><%= helper.formatFullName(user.fullName) %> </a>
+                                <a title="Đăng xuất" href="/auth/logout">Đăng xuất</a>
+                                
+                            <% } else { %>  
+                                <a title="Đăng ký" href="/auth/register">Đăng ký</a>
+                                <a title="Đăng nhập" href="/auth/login">Đăng nhập</a>
+                            <% } %> 
+                        </span>
+                    </div>
+                    <div class="header-separator"></div>
+                    <div class="wrapper-cart">
+                        <a href="/gio-hang">
+                            <button class="icon-cart">
+                                <i class="fas fa-shopping-bag"></i>
+                                <span class="cart-count-product">0</span>    
+                            </button>
+                        </a>
+                        <a title="Giỏ hàng" href="/gio-hang">Giỏ hàng</a>
+                    </div>
+               </div>
+            </div>
+        </div>
+    </div>
+    <div class="header-bottom">
+        <div class="container">
+            <div class="row">
+                <ul class="header-nav">
+                    <li class="nav-item">
+                        <a href="/san-pham/laptop-may-tinh-xach-tay">DANH MỤC LAPTOP</a>
+                        <div class="subnav">
+                            <ul class="dropdown-menu">
+                                <li class="nav-item"><a href="/san-pham/laptop-may-tinh-xach-tay?q=laptop-van-phong">Laptop Văn Phòng</a></li>
+                                <li class="nav-item"><a href="/san-pham/laptop-may-tinh-xach-tay?q=laptop-gaming">Laptop Gaming</a></li>
+                            </ul>
+    
+                            <ul class="dropdown-menu">
+                                <li class="nav-item"><a href="/san-pham/laptop-may-tinh-xach-tay?brand=acer">Laptop Acer</a></li>
+                                <li class="nav-item"><a href="/san-pham/laptop-may-tinh-xach-tay?brand=dell">Laptop Dell</a></li>
+                                <li class="nav-item"><a href="/san-pham/laptop-may-tinh-xach-tay?brand=hp">Laptop HP</a></li>
+                                <li class="nav-item"><a href="/san-pham/laptop-may-tinh-xach-tay?brand=lenovo">Laptop Lenovo</a></li>
+                            </ul>
+    
+                        </div>
+                    </li>
+                    <li class="nav-item"><a href="">LINH KIỆN</a></li>
+                    <li class="nav-item"><a href="">CHÍNH SÁCH</a></li>
+                    <li class="nav-item"><a href="">KHUYẾN MÃI</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+ </header>
+
+ <header class="header-mobile">
+    <div class="header-top">
+        <div class="container">
+            <div class="row">
+                <div class="wrapper-bar">
+                    <button class="btn-bar"><i class="fa-solid fa-bars"></i></button>
+                </div>
+                <div class="wrapper-logo">
+                    <a href="/"><h1 class="heading-home">NHAN LAPTOP</h1></a>
+                </div>
+
+                <div class="wrapper-search">
+
+                    <form action="/tim-kiem" method="GET" class="form-search">
+                        <div class="form-group">
+                            <input type="text" placeholder="Nhập tên sản phẩm" name="q" class="form-control" value="">
+                            <button type="submit" class="submit"><i class="fas fa-search"></i></button>
+                        </div>
+                        <div class="live-search-result">
+                            <ul class="search-result">
+
+                            </ul>
+                        </div>
+                    
+                    </form>
+                </div>
+            
+                <div class="wrapper-cart">
+                    <a href="/gio-hang" class="icon-cart">
+                        <i class="bi bi-cart3"></i>
+                        <span class="cart-count-product">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="header-bottom">
+        <div class="container">
+            <div class="wrapper-search">
+
+                <form action="/tim-kiem" method="GET" class="form-search">
+                    <div class="form-group">
+                        <input type="text" placeholder="Nhập tên sản phẩm" name="q" class="form-control" value="">
+                        <button type="submit" class="submit"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="live-search-result">
+                        <ul class="search-result">
+
+                        </ul>
+                    </div>
+                 
+                </form>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="navbar-mobile">
+
+    <div class="nav-auth">
+        <button class="icon-auth">
+            <i class="fas fa-user"></i>
+        </button>
+        <% if (user) {%> 
+            <a href="/customer/<%= user.userId %>"><%= user.fullName %></a> /
+            <a title="Đăng xuất" href="/auth/logout">Đăng xuất</a>
+
+        <% } else { %>  
+            <a title="Đăng ký" href="/auth/register">Đăng ký</a> /
+            <a title="Đăng nhập" href="/auth/login">Đăng nhập</a>
+        <% } %> 
+       
+        
+    </div>
+
+    <div class="nav-category">
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="/san-pham/laptop-may-tinh-xach-tay">LAPTOP</a>
+                <div class="subnav">
+                    <ul class="dropdown-menu">
+                        <li class="nav-item"><a href="/san-pham/laptop-may-tinh-xach-tay?q=laptop-van-phong">Laptop Văn Phòng</a></li>
+                        <li class="nav-item"><a href="/san-pham/laptop-may-tinh-xach-tay?q=laptop-gaming">Laptop Gaming</a></li>
+                    </ul>
+
+                    <ul class="dropdown-menu">
+                        <li class="nav-item"><a href="/san-pham/laptop-may-tinh-xach-tay?brand=acer">Laptop Acer</a></li>
+                        <li class="nav-item"><a href="/san-pham/laptop-may-tinh-xach-tay?brand=dell">Laptop Dell</a></li>
+                        <li class="nav-item"><a href="/san-pham/laptop-may-tinh-xach-tay?brand=hp">Laptop HP</a></li>
+                        <li class="nav-item"><a href="/san-pham/laptop-may-tinh-xach-tay?brand=lenovo">Laptop Lenovo</a></li>
+                    </ul>
+
+                </div>
+            </li>
+
+            <li class="nav-item">
+                <a href="/san-pham/laptop-may-tinh-xach-tay">LINH KIỆN</a>
+            </li>
+
+        </ul>
+       
+    </div>
+
+</div>
+

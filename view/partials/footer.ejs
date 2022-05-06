@@ -1,0 +1,295 @@
+<footer class="footer">
+    <div class="footer-link">
+        <div class="container">
+            <div class="row">
+                <div class="col col-xl-3 col-sm-6 col-6">
+                    <div class="link-group">
+                        <span class="link-group-title">Giới thiệu NHAN LAPTOP</span>
+                        <p><a href="">Giới thiệu</a></p>
+                        <p><a href="">Thông tin tuyển dụng</a></p>
+                        <p><a href="">Tin tức</a></p>
+                        <span class="footer-social">
+                            <a target="_blank" href="https://www.facebook.com/profile.php?id=100023638717042"><i class="facebook fab fa-facebook-f"></i></a>
+                            <a target="_blank" href="https://www.youtube.com/"><i class="youtube fab fa-youtube"></i></a>
+                            <a target="_blank" href="https://www.instagram.com/"><i class="instagram fab fa-instagram"></i></a>
+                        </span>
+                    </div>
+                </div>
+                <div class="col col-xl-3 col-sm-6 col-6">
+                    <div class="link-group">
+                        <span class="link-group-title">Hỗ trợ khách hàng</span>
+                        <p><a href="">Hướng dẫn mua hàng trực tuyến</a></p>
+                        <p><a href="">Hướng dẫn thanh toán</a></p>
+                        <p><a href="">Gửi yêu cầu bảo hành</a></p>
+                        <p><a href="">Góp ý, Khiếu Nại</a></p>
+                    </div>
+                </div>
+                <div class="col col-xl-3 col-sm-6 col-6">
+                    <div class="link-group">
+                        <span class="link-group-title">Chính sách chung</span>
+                        <p><a href="">Chính sách, quy định chung</a></p>
+                        <p><a href="">Chính sách bảo hành</a></p>
+                        <p><a href="">Chính sách hàng chính hãng</a></p>
+                    </div>
+                </div>
+                <div class="col col-xl-3 col-sm-6 col-6">
+                    <div class="link-group">
+                        <span class="link-group-title">Thông tin khuyến mại</span>
+                        <p><a href="">Thông tin khuyến mại</a></p>
+                        <p><a href="">Sản phẩm khuyến mại</a></p>
+                        <p><a href="">Sản phẩm bán chạy</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-copyright">
+        <div class="container">
+            <p>© 2022 NHAN LAPTOP</p>
+            <p>Địa chỉ: xã Tân Trung, huyện Mỏ Cày Nam, Bến Tre</p>
+            <p>Email: ngohuunhan10@gmail.com - Điện thoại: 0868******</p>
+        </div>
+    </div>
+</footer>
+
+<script src="/js/header.js"></script>
+<script>
+    const countProductOfCart = document.querySelectorAll('.cart-count-product')
+
+    const cartStorage = JSON.parse(localStorage.getItem('cart')) || []
+
+    const countProductValue = cartStorage.length
+
+    countProductOfCart.forEach((element) => {
+        element.innerText = countProductValue
+    })
+
+    const toastContainer = document.getElementById('toast-container')
+    const toast = document.getElementById('toast')
+    const progress = document.querySelector('#toast .progress')
+    const run = progress.querySelector('.run')
+    const closeToast = document.querySelector('#toast .close')
+    let timeId
+    function showToast({type, title, desc, duration = 4000}) {
+
+        
+        const icons = {
+            success: 'fa-solid fa-check',
+            error: 'fa-solid fa-xmark',
+        }
+
+        toast.classList.add(`${type}`)
+        
+        const iconToast = toast.querySelector('.toast-icon')
+        let html = `<i class="${icons[type]}"></i>`
+        iconToast.innerHTML = html
+
+        const titleToast = toast.querySelector('.title')
+        titleToast.innerText = title
+
+        const titleDesc = toast.querySelector('.description')
+        titleDesc.innerText = desc
+
+        if (!toastContainer.classList.contains('active')) {
+            toastContainer.classList.add('active')
+        } 
+
+        if (!progress.classList.contains('active')) {
+            run.style.animationDuration = `${duration/1000}s`
+            progress.classList.add('active')
+        }
+
+        timeId = setTimeout(() => {
+            toastContainer.classList.remove('active')
+            progress.classList.remove('active')
+        }, duration)
+
+        setTimeout(() => {
+            toast.classList = ''
+        }, duration + 300)
+
+    }
+
+    closeToast.addEventListener('click', function() {
+        clearTimeout(timeId)
+        setTimeout(() => {
+            progress.classList.remove('active')
+        }, 300)
+        toastContainer.classList.remove('active')
+        setTimeout(() => {
+            toast.classList = ''
+        }, 500)
+    })
+        
+</script>
+
+<script type="module">
+    import { removeDuplicateSpaceAndTrim, noSpecialChars, removeAscent } from '/js/validate.js';
+
+
+    // live search
+    const liveSearchResultElement = document.querySelectorAll('.live-search-result')
+    const liveSearchProductList = document.querySelectorAll('.live-search-result .search-result')
+    const inputSearchElement = document.querySelectorAll('.form-search input')
+    const formSearch = document.querySelectorAll('.form-search')
+
+
+    formSearch.forEach((form) => {
+
+        form.addEventListener('submit', function (e) {
+            const input = form.querySelector('input')
+            let value = input.value
+
+            
+            input.value = removeDuplicateSpaceAndTrim(value)
+            
+            value = input.value
+            
+            console.log(value)
+            if (!(noSpecialChars(removeAscent(value)) && value != '')) {
+                e.preventDefault();
+                showToast({
+                    type: 'error',
+                    title: 'Có lỗi !',
+                    desc: 'Vui lòng không nhập các kí tự đặc biệt!'
+                })
+            }
+        })
+
+    })
+    
+
+
+    inputSearchElement.forEach((input) => {
+        input.addEventListener('keyup', async function(e) {
+            let keyword =this.value
+           
+            keyword = removeDuplicateSpaceAndTrim(keyword)
+            if (!noSpecialChars(keyword) && keyword) return
+
+            await liveSearch(keyword)
+            if (keyword) {
+                handleActiveLiveSearchResultElement()
+            }
+            else {
+                handleInactiveLiveSearchResultElement()
+            }
+        })
+    })
+
+    inputSearchElement.forEach((element) => {
+        element.addEventListener('focus', function(e) {
+            let keyword = this.value
+            keyword = removeDuplicateSpaceAndTrim(keyword)
+            if (!noSpecialChars(keyword) && keyword) return 
+            if (this.value) {
+                handleActiveLiveSearchResultElement()
+            }
+        })
+
+    })
+
+    inputSearchElement.forEach((element) => {
+        element.addEventListener('blur', function(e) {
+            handleInactiveLiveSearchResultElement()
+        })
+
+    })
+    
+
+    liveSearchProductList.forEach((element) => {
+        element.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+        })
+    })
+
+    function handleActiveLiveSearchResultElement() {
+        liveSearchResultElement.forEach((element) => {
+            if (!element.classList.contains('active')) {
+                element.classList.add('active')
+            }
+        })
+    }
+
+    function handleInactiveLiveSearchResultElement() {
+        liveSearchResultElement.forEach((element) => {
+            if (element.classList.contains('active')) {
+                element.classList.remove('active')
+            }
+        })
+    }
+
+    
+
+    function liveSearch(keyword) {
+        keyword = removeDuplicateSpaceAndTrim(keyword);
+        $.ajax({
+            url: "/api/v1/product/live-search",
+                type: "GET",
+                data: {
+                    keyword
+                },
+                dataType: "json",
+                success: function(result){
+                    let html = `<li style="padding: 8px 12px; font-weight: bold;">Sản phẩm gợi ý</li>`;
+                    const data = result.data
+                    if (result.status == 'success' && data.length > 0) {
+                        data.forEach((item) => {
+                            let price = item['price']
+                            let discount = item['discount'];
+                            if (discount != 0) {
+                                price = price - (price * discount)/100;
+                                price = Math.round(price/10000)*10000;
+                            }
+                            price = new Intl.NumberFormat('de-DE').format(price)
+                            let url = `laptop-may-tinh-xach-tay/${item['slug']}`
+                            if (item['product_type'] == 2) {
+                                url = `phu-kien/${item['slug']}`
+                            }
+
+                            let name = highlightText(keyword, item['name'])
+                            html += `<li>
+                                        <a class="row" href="/san-pham/${url}">
+                                            <div class="col col-xl-2 col-sm-3 col-3">
+                                                <img src="${item['thumbnail']}" alt="">
+                                            </div>
+                                            <div class="col col-xl-10 col-9">
+                                                <p class="product-name">${name}</p>
+                                                <p class="product-price">Giá: <span>${price}đ</span></p>
+                                            </div>
+                                        </a>
+                                    </li>`;
+                            })
+                    }
+                    else html = '<li style="padding: 8px 12px; color: red">Không tìm thấy sản phẩm phù hợp!</li>'
+                    liveSearchProductList.forEach((element) => {
+                        element.innerHTML = html
+                    })
+                }
+        })
+    }
+
+    function highlightText(keyword, result) {
+        let ans = ''
+        result.split(' ').forEach((item, index) => {
+            if (isInclude(keyword, item)) {
+                ans += ` <span class="highlight">${item}</span>`
+            }
+            else ans += ` ${item}`
+        })
+        return ans
+    }
+
+    function isInclude(keyword, result) {
+        let ans = false
+        let b = result.toLowerCase();
+        keyword.split(' ').forEach((item, index) => {
+            let a = item.toLowerCase();
+            if (b.includes(a) && a != '') {
+                ans = true;
+                return
+            }
+        })
+        return ans
+    }
+</script>

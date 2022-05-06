@@ -1,0 +1,63 @@
+
+
+<div class="nav-footer">
+
+    <div class="nav-list-footer">
+        <div class="nav-item">
+            <a href="/"><i class="fa-solid fa-house"></i> Trang chủ</a>
+        </div>
+        <div class="nav-item">
+            <a href="/customer/<%= customer.userId %>"><i class="fa-solid fa-user"></i> Tài khoản</a>
+        </div>
+        <div class="nav-item">
+            <a href="/customer/<%= customer.userId %>/mycart"><i class="fa-solid fa-cart-arrow-down"></i> Đơn hàng</a>
+        </div>
+        <div class="nav-item">
+            <a href="/customer/<%= customer.userId %>/doi-mat-khau"><i class="fa-solid fa-key"></i> Bảo mật</a>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+
+    const alertMessage = document.querySelector('.alert')
+    let messageElement = ''
+    if (alertMessage) {
+        messageElement = alertMessage.querySelector('p')
+    }
+
+    if (alertMessage) {
+        setTimeout(() => {
+            alertMessage.classList.remove('active')
+        }, 2000)
+    }
+
+    function showAlert({type, message}) {
+
+            const alertType = {
+                success: 'alert-success',
+                error: 'alert-danger',
+            }
+
+
+            messageElement.innerText = message
+            alertMessage.classList.add(`active`)
+            alertMessage.classList.add(`${alertType[type]}`)
+
+        }
+
+        function hideAlert() {
+            alertMessage.classList.remove('active')
+            if (alertMessage.classList.contains('alert-success')) {
+                alertMessage.classList.remove('alert-success')
+            }
+
+            if (alertMessage.classList.contains('alert-danger')) {
+                alertMessage.classList.remove('alert-danger')
+            }
+        }
+     
+        
+    </script>

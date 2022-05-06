@@ -1,0 +1,357 @@
+<%- include('../header') %>
+
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Thêm sản phẩm</h5>
+                        <div class="alert alert-block alert-danger message"></div>
+                    </div>
+                    <div class="card-body">
+                        <form action="add" method="POST" id="form-add" enctype="multipart/form-data">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <div class="row">
+                                <div class="col-xl-3">
+                                    <label for="" class="form-label">Loại sản phẩm</label>
+                                    <select name="productType" class="form-select" id="select-product-type">
+                                        <% if (dataProductType) { %>
+                                        <%  let isFirst = true  %>
+                                        <%  dataProductType.forEach((item) => { %>
+                                        <%   if (isFirst) { %>
+                                        <%      isFirst = false   %> 
+                                                <option selected data-alias="<%= item['alias'] %>" value="<%= item['id'] %>"><%= item['name'] %></option>
+                                        <%    } else { %> 
+                                            <option data-alias="<%= item['alias'] %>" value="<%= item['id'] %>"><%= item['name'] %></option>
+                                            <% } %>
+                                        <%  }) %>
+
+                                        <% } %>    
+                                    </select>
+                                </div>
+                                <div class="col-xl-3">
+                                    <label for="" class="form-label">Danh mục</label>
+                                    <select name="category" class="form-select" id="select-category">
+                                        <% if (dataCategory) { %>
+                                            <%  let isFirst = true  %>
+                                            <%  dataCategory.forEach((item) => { %>
+                                            <%   if (isFirst) { %>
+                                            <%      isFirst = false   %> 
+                                                    <option selected value="<%= item['id'] %>"><%= item['name'] %></option>
+                                            <%    } else { %> 
+                                                <option value="<%= item['id'] %>"><%= item['name'] %></option>
+                                                <% } %>
+                                            <%  }) %>
+    
+                                            <% } %> 
+                                    </select>
+                                </div>
+                                <div class="col-xl-3">
+                                    <label for="" class="form-label">Hãng</label>
+                                    <select name="brand" class="form-select" id="select-brand">
+                                        <% if (dataBrand) { %>
+                                            <%  let isFirst = true  %>
+                                            <%  dataBrand.forEach((item) => { %>
+                                            <%   if (isFirst) { %>
+                                            <%      isFirst = false   %> 
+                                                    <option selected data-alias="<%= item['alias'] %>" value="<%= item['id'] %>"><%= item['name'] %></option>
+                                            <%    } else { %> 
+                                                <option data-alias="<%= item['alias'] %>" value="<%= item['id'] %>"><%= item['name'] %></option>
+                                                <% } %>
+                                            <%  }) %>
+    
+                                            <% } %>   
+                                    </select>
+                                </div>
+                            
+                                <div class="col-xl-3">
+                                    <label for="" class="form-label">Mã sản phẩm</label>
+                                    <input id="product-id" name="productId" required type="text" class="form-control" placeholder="Mã sản phẩm">
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <label for="" class="form-label">Tên sản phẩm</label>
+                                    <input name="productName" id="product-name" required type="text" class="form-control" placeholder="Tên sản phẩm">
+                                </div>
+                                <div class="col-xl-3">
+                                    <label for="" class="form-label">Đường dẫn</label>
+                                    <input name="productSlug" id="product-slug" required type="text" class="form-control" placeholder="Đường dẫn (slug)">
+                                </div>
+                                <div class="col-xl-3">
+                                    <label for="" class="form-label">Giá sản phẩm</label>
+                                    <input name="productPrice" required type="number" step="1" min="0" class="form-control" placeholder="Giá sản phẩm">
+                                </div>
+                                <div class="col-xl-3">
+                                    <label for="" class="form-label">Khuyễn mãi</label>
+                                    <input name="productDiscount" required type="number" step="1" min="0" class="form-control" placeholder="Khuyễn mãi (%)">
+                                </div>
+                                <div class="col-xl-3">
+                                    <label label for="" class="form-label">Tình trạng</label>
+                                    <select name="productStatus" class="form-select">
+                                        <option selected value="1">Còn hàng</option>
+                                        <option value="0">Hết hàng</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mt-2" style="align-items: center;">
+                                <div class="col-xl-4">
+                                    <label for="formFile" class="form-label">Ảnh sản phẩm</label>
+                                    <input required name="thumbnail" class="form-control" type="file" id="formFile">
+                                </div>
+                                <div class="col-xl-8">
+                                    <img src="" alt="" class="preview-image-upload">
+                                </div>
+                            </div>
+                            <div class="row mt-2 laptop box-product-info active">
+                                <div class="col-xl-3">
+                                    <label for="" class="form-label">CPU</label>
+                                    <input name="productCpu" type="text" class="form-control" placeholder="CPU">
+                                </div>
+                                <div class="col-xl-3">
+                                    <label for="" class="form-label">Thông tin chi tiết CPU</label>
+                                    <input name="productCpuDetail" type="text" class="form-control" placeholder="Thông tin chi tiết CPU">
+                                </div>
+                                <div class="col-xl-3">
+                                    <label for="" class="form-label">Ổ cứng</label>
+                                    <input name="productHardDrive" type="text" class="form-control" placeholder="Ổ cứng">
+                                </div>
+                                <div class="col-xl-3">
+                                    <label for="" class="form-label">Thông tin ổ cứng</label>
+                                    <input name="productHardDriveDetail" type="text" class="form-control" placeholder="Thông tin ổ cứng">
+                                </div>
+                                 <div class="col-xl-3">
+                                    <label for="" class="form-label">RAM</label>
+                                    <input name="productRam" type="number" step="1" min="1" class="form-control" placeholder="RAM">
+                                </div>
+                                 <div class="col-xl-3">
+                                    <label for="" class="form-label">Card màn hình</label>
+                                    <input name="productGraphics" type="text" class="form-control" placeholder="Card màn hình">
+                                </div>
+                                 <div class="col-xl-3">
+                                    <label for="" class="form-label">Màn hình</label>
+                                    <input name="productScreen" type="text" class="form-control" placeholder="Màn hình">
+                                </div>
+                                <div class="col-xl-3">
+                                    <label for="" class="form-label">Trọng lượng</label>
+                                    <input name="productWeight" type="number" step="0.01" min="1" class="form-control" placeholder="Trọng lượng (kg)">
+                                </div>
+                            </div>
+
+                            <div class="row other box-product-info">
+                                <div class="col-xl-12">
+                                    <label for="" class="form-label">Thông tin</label>
+                                    <input name="info" type="text" class="form-control" placeholder="Thông tin">
+                                </div>
+                                <div class="col-xl-12">
+                                    <label for="" class="form-label">Mô tả</label>
+                                    <textarea name="description" id="ckeditor-accessories-description" class="form-control"></textarea>
+                                </div>
+                                
+                            </div>
+                            
+                            <button type="submit" name="submit-add-product" class="btn btn-danger mt-3">Thêm</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Close admin-wrapper -->
+    </div>
+
+<script src="https://cdn.ckeditor.com/ckeditor5/33.0.0/classic/ckeditor.js"></script>
+<script>
+    
+    ClassicEditor
+        .create( document.querySelector('#ckeditor-accessories-description'))
+        .catch( error => {
+            console.error( error );
+    } )
+</script>
+
+
+    <script type="module">
+        import { isValidName, toSlug, removeDuplicateSpaceAndTrim } from '/js/validate.js'
+
+        const selectProductTypeElement = document.getElementById('select-product-type')
+        const selectBrandElement = document.getElementById('select-brand')
+        const inputProductId = document.getElementById('product-id')
+
+        const formAdd = document.querySelector('#form-add')
+
+        const productNameElement = document.querySelector('#form-add input[name="productName"]')
+        const productSlugElement = document.querySelector('#form-add input[name="productSlug"]')
+        const inputElements = document.querySelectorAll('#form-add input[type="text"]')
+
+        const alertMessage = document.querySelector('.alert.message')
+
+        const boxProductInfo = document.querySelectorAll('.box-product-info')
+
+        const inputUploadFile = document.querySelector('#form-add input[name="thumbnail"]')
+
+        const previewImageUpload = document.querySelector('.preview-image-upload')
+
+
+        const productTypeAlias = selectProductTypeElement[selectProductTypeElement.selectedIndex].getAttribute('data-alias')
+        const brandAlias = selectBrandElement[selectBrandElement.selectedIndex].getAttribute('data-alias')
+
+
+        inputProductId.value = `${productTypeAlias}${brandAlias}`
+
+        let arrError = []
+
+
+        selectProductTypeElement.addEventListener('change', function() {
+
+            const productType = selectProductTypeElement[selectProductTypeElement.selectedIndex].value
+
+            boxProductInfo.forEach((box) => {
+                box.classList.remove('active')
+            })
+
+            if (productType == 1) {
+                document.querySelector('.box-product-info.laptop').classList.add('active')
+            } else if (productType == 2){
+                document.querySelector('.box-product-info.other').classList.add('active')
+            }
+
+            inputProductId.value = `${productTypeAlias}${brandAlias}`
+        })
+
+        selectBrandElement.addEventListener('change', function() {
+            const productType = selectProductTypeElement[selectProductTypeElement.selectedIndex].getAttribute('data-alias')
+            const brandAlias = selectBrandElement[selectBrandElement.selectedIndex].getAttribute('data-alias')
+
+            inputProductId.value = `${productType}${brandAlias}`
+        })
+
+        inputElements.forEach((input) => {
+            input.addEventListener('blur', function() {
+                let inputValue = removeDuplicateSpaceAndTrim(this.value)
+                this.value = inputValue
+            })
+        })
+
+        productNameElement.addEventListener('blur',function() {
+            // if (isValidName(productNameElement.value)) {
+                productSlugElement.value = toSlug(productNameElement.value)
+                const slug = productSlugElement.value
+                isExistsProductSlug(slug)
+            // } else {
+                // arrError.push(`Tên sản phẩm không hợp lệ!`)
+            // }
+            // handleShowError(arrError)
+        })
+
+
+        inputProductId.addEventListener('blur', function(e) {
+            const productId = this.value
+            const isExists = isExistsProductId(productId)
+        })
+
+        inputUploadFile.addEventListener('change', function(e) {
+            if (inputUploadFile.files.length > 0) {
+                const file = inputUploadFile.files[0]
+                const fileReader = new FileReader()
+                fileReader.onload = function(fileLoaderEvent) {
+                    const srcImage = fileLoaderEvent.target.result
+                    previewImageUpload.setAttribute('src', srcImage)
+                    previewImageUpload.classList.add('active')
+                }
+                fileReader.readAsDataURL(file)
+            } else {
+                previewImageUpload.setAttribute('src', '')
+                previewImageUpload.classList.remove('active')
+            }
+        })
+
+        function isExistsProductId(productId) {
+            $.ajax({
+                url: `/api/v1/product/${productId}/check`,
+                type: 'get',
+                dataType: 'json',
+                success: function(result) {
+                    if (result.exists) {
+                        if (!arrError.find(err => err.key == 'productId'))
+                            arrError.push({key: 'productId', value: 'Mã sản phẩm đã tồn tại!'})
+                        handleShowError(arrError)
+                    } else {
+                        handleDeleteItemError('productId')
+                    }
+
+                }
+            })
+        }
+
+        function isExistsProductSlug(slug) {
+
+            fetch(`/api/v1/product/${slug}/check-slug`)
+            .then(res => res.json())
+            .then(result => {
+                if (result.exists) {
+                    arrError.push({key: 'slug', value: 'Đường dẫn sản phẩm đã tồn tại!'})
+                    handleShowError(arrError)
+                } else {
+                    handleDeleteItemError('slug')
+                }
+            })
+
+        }
+
+        formAdd.addEventListener('submit', function(e) {
+            const boxLaptop = document.querySelector('.box-product-info.laptop')
+            if (boxLaptop.classList.contains('active')) {
+                const ram = document.querySelector('#form-add input[name="productRam"]')
+                const weight = document.querySelector('#form-add input[name="productWeight"]')
+                
+              
+                if (!ram.value) {
+                    arrError.push({key: 'ram', value: 'Ram không được để trống!'})
+                } else {
+                    handleDeleteItemError('ram')
+                }
+
+                if (!weight.value) {
+                    arrError.push({key: 'weight', value: 'Trọng lượng không được để trống!'})
+                } else {
+                    handleDeleteItemError('weight')
+                }
+            }
+
+                console.log(arrError.length)
+
+                if (arrError.length > 0) {
+                    e.preventDefault()
+                    handleShowError(arrError)
+                }
+        })
+        
+        function handleShowError(error) {
+            if (error.length > 0) {
+                let html = ``
+                error.forEach((err) => {
+                    html += `<p>${err.value}</p>`
+                })
+                alertMessage.innerHTML = html
+                if (!alertMessage.classList.contains('active')) {
+                    alertMessage.classList.add('active')
+                }
+            } else {
+                alertMessage.classList.remove('active')
+            }
+        }
+
+        function handleDeleteItemError(key) {
+            arrError = arrError.filter((err) => {
+                return err.key != key
+            })
+
+            handleShowError(arrError)
+
+        }
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,113 @@
+<%- include('./header') %>
+
+<style>
+    .preview-image-upload {
+        display: none;
+    }
+    .preview-image-upload.active {
+        display: block;
+    }
+</style>
+
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Cập nhật ảnh đại diện</h5>
+                        <% if (error && error != '' && error.length > 0) { %>
+
+                            <div class="alert alert-block alert-danger active">
+                                <p><%= error %></p>
+                            </div>
+    
+                        <% } %> 
+                        <% if (success && success != '' && success.length > 0) { %>
+    
+                            <div class="alert alert-block alert-success active">
+                                <p><%= success %></p>
+                            </div>
+    
+                        <% } %> 
+                        </p>
+                    </div>
+                    <div class="card-body">
+                        <form enctype="multipart/form-data" action="" method="POST" id="form-avatar">
+                            <div class="row">
+                                <div class="col-xl-4">
+                                    <label for="formFile" class="form-label">Cập nhật ảnh mới</label>
+                                    <input required name="avatar" class="form-control" type="file" id="formFile">
+                                </div>
+                                <div class="col-xl-4">
+                                    <img src="" alt="" class="preview-image-upload">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-success mt-3">Cập nhật</button>
+                        </form>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Close admin-wrapper -->
+</div>
+    <%- include('./footer') %>
+
+
+<script>
+
+    const avatarForm = document.getElementById('form-avatar')
+    const inputUploadFile = document.querySelector('#form-avatar input[name="avatar"]')
+    const previewImageUpload = document.querySelector('.preview-image-upload')
+
+
+
+    inputUploadFile.addEventListener('change', function(e) {
+        if (inputUploadFile.files.length > 0) {
+            const file = inputUploadFile.files[0]
+            
+            const { type } = file
+
+            if (!(type === 'image/jpeg' || type === 'image/png')) {
+                showAlert({ 
+                    type: 'error', 
+                    message: 'Vui lòng upload tệp định dạng PNG hoặc JPEG!'
+                })
+                setTimeout(hideAlert, 3500) 
+                return
+            }
+
+            const fileReader = new FileReader()
+            fileReader.onload = function(fileLoaderEvent) {
+                const srcImage = fileLoaderEvent.target.result
+                previewImageUpload.setAttribute('src', srcImage)
+                previewImageUpload.classList.add('active')
+            }
+            fileReader.readAsDataURL(file)
+        } else {
+            previewImageUpload.setAttribute('src', '')
+            previewImageUpload.classList.remove('active')
+        }
+    })
+
+    avatarForm.addEventListener('submit', function(e) {
+        const file = inputUploadFile.files[0]
+        const { type } = file
+
+        if (!(type === 'image/jpeg' || type === 'image/png')) {
+            e.preventDefault()
+            showAlert({ 
+                type: 'error', 
+                message: 'Vui lòng upload tệp định dạng PNG hoặc JPEG!'
+            })
+            setTimeout(hideAlert, 3500) 
+            return
+        }
+    })
+    
+</script>
+
+</body>
+</html>

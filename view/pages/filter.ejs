@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head.ejs') %>
+    <link rel="stylesheet" href="/css/category.css">
+</head>
+<body>
+
+    <%- include('../partials/header') %>
+
+   
+    <div class="main">
+        <div class="category-page">
+            <div class="category-page-top">
+                <div class="container">
+                    <div class="breadcrumb">
+                        <ul>
+                            <li>
+                                <a href="/">Trang chủ </a>
+                            </li>
+                            <li>
+                                <a href="">Laptop</a>
+                            </li>
+                        </ul>
+                    </div>
+    
+                </div>
+            </div>
+            <div class="category-content">
+                <div class="container">
+                    <div class="row">
+                        <div class="col col-xl-3 col-12 col-sm-12">
+                            <div class="filter">
+                                <p class="filter-title title">Lọc sản phẩm</p>
+    
+                                <div class="filter-group">
+                                    <p class="filter-group-title title">Nhu cầu sử dụng</p>
+
+                                    <% if (dataCategory) { 
+
+                                            dataCategory.forEach((item) => {
+                                            let isChecked = ''  
+                                            if (categoryActiveId && categoryActiveId == item['id']) { 
+                                                isChecked = 'checked'  
+                                            } %> 
+                                            
+                                        <div class="filter-group-item checkbox">
+                                            <label>
+                                                <input type="checkbox" <%= isChecked %> class="common-selector-filter category" value="<%= item['id'] %>">
+                                                <span><%= item['name'] %> </span>
+                                            </label>
+                                        </div>
+
+                                            <%  }) %>
+                                    <% } %> 
+    
+                                </div>
+    
+    
+    
+                                <div class="filter-group">
+                                    <p class="filter-group-title title">Hãng sản xuất</p>
+                                    <% if (dataBrand) {
+                                        dataBrand.forEach((item) => {
+                                            let isChecked = ''  
+                                            if (brandActiveId && brandActiveId == item['id']) { 
+                                                isChecked = 'checked'  
+                                            } %> 
+
+                                            <div class="filter-group-item checkbox">
+                                                <label>
+                                                    <input type="checkbox" <%= isChecked %> class="common-selector-filter brand" value="<%= item['id'] %>">
+                                                    <span><%= item['name'] %> </span>
+                                                </label>
+                                            </div>
+    
+                                        <% }) %>
+                                            
+                                    <% } %> 
+                                </div>
+    
+    
+                                <div class="filter-group">
+                                    <p class="filter-group-title title">CPU - Bộ vi xử lý</p>
+                                    <% if (dataCpu) { %>
+                                        
+                                        <%    dataCpu.forEach((item) => { %>
+                                            <div class="filter-group-item checkbox">
+                                                <label>
+                                                    <input type="checkbox" class="common-selector-filter cpu" value="<%= item['cpu'] %>">
+                                                    <span><%= item['cpu'] %> </span>
+                                                </label>
+                                            </div>
+    
+                                        <%    }) %>
+                                            
+                                    <% } %> 
+                                </div>
+    
+    
+                                <div class="filter-group">
+                                <p class="filter-group-title title">RAM</p>
+                                <% if (dataRam) { %>
+                                        
+                                    <%    dataRam.forEach((item) => { %>
+                                        <div class="filter-group-item checkbox">
+                                            <label>
+                                                <input type="checkbox" class="common-selector-filter ram" value="<%= item['ram'] %>">
+                                                <span><%= item['ram'] %> GB</span>
+                                            </label>
+                                        </div>
+
+                                    <%    }) %>
+                                        
+                                <% } %> 
+                                </div>
+    
+                                <div class="filter-group">
+                                    <p class="filter-group-title title">Ổ cứng</p>
+    
+                                </div>
+    
+    
+                            </div>
+                        </div>
+                        <div class="col col-xl-9 col-12 col-sm-12">
+                            
+                            <div class="category-page-right">
+                                <div class="category-right-top">
+                                    <div class="box-sort">
+                                        <div class="sort-list">
+                                            <button class="sort-item" data-sort="new">Hàng mới</button>
+                                            <button class="sort-item" data-sort="discount">Giảm giá nhiều</button>
+                                            <button class="sort-item" data-sort="price-asc">Giá tăng dần</button>
+                                            <button class="sort-item" data-sort="price-desc">Giá giảm dần</button>
+                                        </div>
+                                    </div>
+                                    <div class="box-page-size">
+                                        <label>Hiển thị</label>
+                                        <select id="select-page-size" class="form-select">
+                                            <option selected value="4">4 sản phẩm</option>
+                                            <option value="8">8 sản phẩm</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="product-list" id="filter-data">
+                                    <div class="loading">
+                                        <img src="/image/loading-2.gif" alt="">
+                                    </div>
+                                    <div class="row result">
+                                       
+                                    </div>
+                                </div>
+                                <div class="pagination">
+                                    <ul class="pages">
+    
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+    
+        </div>
+    </div>
+    <%- include('../partials/footer') %>
+
+
+    <script>
+        const commonSelectorFilter = document.querySelectorAll('.common-selector-filter')
+        const sortItems = document.querySelectorAll('.sort-item')
+        const loadingElement = document.querySelector('.loading')
+        const resultFilterElement = document.querySelector('#filter-data .result.row')
+        const paginationElement = document.querySelector('.pagination .pages')
+        const pageSizeElement = document.getElementById('select-page-size')
+
+        commonSelectorFilter.forEach((item) => {
+            item.addEventListener('click', function() {
+                const sort = getSort()
+                const pageSize = getPageSize()
+                filterData({sort, pageSize})
+            })
+        })
+
+        sortItems.forEach((item) => {
+            item.addEventListener('click', function() {
+                // remove active cac button khac
+                sortItems.forEach((item2) => {
+                    if (item2.classList.contains('active')) {
+                        item2.classList.remove('active')
+                    }
+                })
+                // add class active 
+                this.classList.add('active')
+                // get sort value
+                const sort = this.getAttribute('data-sort')
+                const pageSize = getPageSize()
+
+                filterData({sort, pageSize})
+            })
+        })
+
+        pageSizeElement.addEventListener('change', function() {
+            const pageSize = parseInt(this.value)
+
+            const sort = getSort()
+            filterData({sort, pageSize})
+
+        })
+
+        paginationElement.addEventListener('click', function(e) {
+            const btnPage = e.target.closest('.page-item')
+            const page = parseInt(btnPage.getAttribute('data-id'))
+            const sort = getSort()
+            const pageSize = getPageSize()
+            filterData({sort, page, pageSize})
+        })
+            
+        filterData()
+
+        function getFilter(classNameFilter) {
+            let filter = [];
+            let commonSelector = document.querySelectorAll(`.${classNameFilter}.common-selector-filter:checked`)
+            
+            commonSelector.forEach((item) => {
+                filter.push(item.value)
+            })
+            return filter
+        }
+
+        function getSort() {
+            let sort = ''
+            sortItems.forEach((item) => {
+                if (item.classList.contains('active')) {
+                    sort = item.getAttribute('data-sort')
+                }
+            })
+            return sort
+        }
+
+        function getPageSize() {
+            const pageSize = parseInt(document.querySelector('#select-page-size').value)
+            return pageSize
+        }
+
+        function filterData(options) {
+            let sort = ''
+            let page = 1
+            let pageSize = 4
+            if (options) {
+                sort = options.sort ? options.sort : ''
+                page = options.page ? options.page : 1
+                pageSize = options.pageSize ? options.pageSize : 4
+            }
+
+            let category = getFilter('category')
+            let brand = getFilter('brand')
+            let cpu = getFilter('cpu')
+            let ram = getFilter('ram')
+            loadingElement.classList.add('show')
+
+            $.ajax({
+                url: "/api/v1/laptop/filter",
+                type: "GET",
+                data: {
+                   category,
+                   brand,
+                   cpu,
+                   ram,
+                   sort,
+                   page,
+                   pageSize
+                },
+                dataType: "json",
+                success: function(result) {
+                console.log(result)
+                loadingElement.classList.remove('show')
+                const data = result.data
+                    let html = ``;
+                    let htmlPage = ``
+                    if (data.length > 0) {
+                        if (result.totalPage > 1) {
+                            if (page > 1) {
+                                htmlPage += `<li data-id=${page-1} class="page-item"><p class="page-link">Previous</p></li>`
+                            }
+                            for(let i = 0; i < result.totalPage; i++) {
+                                if (page == (i + 1)) {
+                                    htmlPage += `<li data-id=${i+1} class="page-item active"><p class="page-link">${i+1}</p></li>`
+                                } else {
+                                    htmlPage += `<li data-id=${i+1} class="page-item"><p class="page-link">${i+1}</p></li>`
+                                }
+                            }
+                            if (page < result.totalPage) {
+                                htmlPage += `<li data-id=${page+1} class="page-item"><p class="page-link">Next</p></li>`
+                            }
+                            
+                        } else {
+                            htmlPage = ``;
+                        }
+
+                        $.each(data, function(index, item) {
+                            let price = item['price']
+                            let discount = item['discount'];
+                            let priceDiscount = price
+                            if (discount != 0) {
+                                priceDiscount = price - (price * discount)/100;
+                                priceDiscount = Math.round(priceDiscount/10000)*10000;
+                            }
+                            priceDiscount = new Intl.NumberFormat('de-DE').format(priceDiscount)
+                            price = new Intl.NumberFormat('de-DE').format(price)
+
+                            html += `<div class="col col-xl-3 col-6 col-sm-6">
+                                        <div class="product-item">`
+                            if (item['discount'] != 0) {
+                                html += `<div class="box-discount">
+                                            <p>${item['discount']}%</p>
+                                        </div>`
+                            }
+                            html         += `<a href="/san-pham/laptop-may-tinh-xach-tay/${item['slug']}" class="product-img">
+                                                <img src="${item['thumbnail']}" alt="">
+                                            </a>
+                                            <div class="product-info">
+                                                <a href="/san-pham/laptop-may-tinh-xach-tay/${item['slug']}" class="product-name">LAPTOP ${item['name']} (${item['cpu']}/${item['ram']}GB RAM/${item['hard_drive_size']}/${item['screen']})</a>
+                                                <div class="discount-info">`
+                            if (discount == 0) {
+                                html += `<span class="old-price" style="visibility: hidden;">đ></span>
+                                        <span class="discount"></span>`;
+                                        
+
+                            }
+                            else html += ` <span class="old-price">${price}đ</span>
+                                            <span class="discount">( Tiết kiệm: ${item['discount']}% )</span>`
+                            html += `                                               
+                                    </div>
+                                    <p class="price">${priceDiscount}đ</p>`;
+                            if (item['status'] == 1) {
+                                html += `<div class="action">
+                                                    <p class="available"><i class="fa fa-check"></i> Còn hàng</p>
+                                                    <p class="cart" data-price="${item['price']}" 
+                                                    data-discount="${item['discount']}" 
+                                                    data-name="${item['name']}" 
+                                                    data-id="${item['product_id']}"
+                                                    data-img="${item['thumbnail']}"
+                                                    data-info="${item['cpu']}/${item['ram']}GB RAM/${item['hard_drive_size']}"
+                                                    data-slug="laptop-may-tinh-xach-tay/${item['slug']}">
+                                                        <i class="bi bi-cart3"></i>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>`;
+                            }
+                            else html += `<div class="action">
+                                            <p class="sold-out"><i class="bi bi-telephone-fill"></i> Liên hệ</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`
+
+                        
+                        })
+                    }
+                    else {
+                        html += `<h2>No Data Found</h2>`
+                    }
+                    resultFilterElement.innerHTML = html
+                    paginationElement.innerHTML = htmlPage
+                }
+            });
+        }
+
+    </script>
+    <script type="module">
+        import { CCart } from '/js/cart.js';
+        let cart =  new CCart
+
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.cart')) {
+                const btnCart = e.target.closest('.cart')
+
+                const productId = btnCart.getAttribute('data-id')
+                const productName = btnCart.getAttribute('data-name')
+                const productInfo = btnCart.getAttribute('data-info')
+                const productThumbnail = btnCart.getAttribute('data-img')
+                const productSlug = btnCart.getAttribute('data-slug')
+
+                let productPrice = parseInt(btnCart.getAttribute('data-price'))
+                const productDiscount = parseInt(btnCart.getAttribute('data-discount'))
+
+                if (productDiscount != 0) {
+                    productPrice = productPrice - productPrice * (productDiscount)/100
+                    productPrice = Math.round(productPrice/10000)*10000
+                }
+
+                cart.addToCart({
+                    productId,
+                    quantity: 1,
+                    productName,
+                    productInfo,
+                    productThumbnail,
+                    productPrice,
+                    productSlug
+                })
+
+                countProductOfCart.forEach((element) => {
+                    element.innerText = cart.getCountProduct()
+                })
+                showToast({
+                    type: 'success',
+                    title: 'Thêm thành công',
+                    desc: 'Sản phẩm đã được thêm vào giỏ hàng!',
+                    duration: 1500
+                })
+            }
+        })
+</script>
+
+</body>
+</html>
+

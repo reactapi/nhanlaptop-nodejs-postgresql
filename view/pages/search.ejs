@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head.ejs') %>
+    <link rel="stylesheet" href="/css/category.css">
+</head>
+<body>
+
+    <%- include('../partials/header') %>
+
+    <div class="main">
+        <div class="category-page">
+            <div class="category-page-top">
+                <div class="container">
+                    <div class="breadcrumb">
+                        <ul>
+                            <li>
+                                <a href="/">Trang chủ </a>
+                            </li>
+                            <li>
+                                <a href="">Tìm kiếm</a>
+                            </li>
+                        </ul>
+                    </div>
+                  
+                    <h1 class="heading">Từ khóa: '<%= q %>' </h1>
+                </div>
+            </div>
+            <div class="category-content">
+                <div class="container">
+                    <div class="product-list">
+                        <div class="row">
+                            <% data.forEach((item) => { %>
+                                <div class="col col-xl-2-4 col-sm-6 col-6">
+                                    <div class="product-item">
+                                        <% let url = `laptop-may-tinh-xach-tay/${item['slug']}`
+                                        let name = `LAPTOP ${item['name']} (${item['cpu']}/${item['ram']}GB RAM/${item['hard_drive_size']}/${item['screen']})`
+                                        let info = `${item['cpu']}/${item['ram']}GB RAM/${item['hard_drive_size']}`
+                                        if (item['product_type'] == 2)  {
+                                            url = `phu-kien/${item['slug']}`
+                                            name = `${item['name']} ${item['info']}`
+                                            info = `${item['info']}`
+                                        } %>
+                                        <% if (item['discount'] != 0) { %>
+                                            <div class="box-discount">
+                                                <p><%= item['discount'] %>%</p>
+                                            </div>
+                                        <% } %> 
+                                        <a href="/san-pham/<%= url %>" data-id="<%=item['product_id']%>" class="product-img">
+                                            <img src="<%=item['thumbnail']%>" alt="">
+                                        </a>
+                                        <div class="product-info">
+                                            <a href="/san-pham/<%= url %>">
+                                                <h3 class="product-name">
+                                                    <%= name %>
+                                                </h3>
+                                            </a>
+                                    <% if (item['discount'] != 0) { %>
+                                        
+                                    <%    let priceDiscount = item['price'] - item['price']* (item['discount'])/100; %>
+                                    <%    priceDiscount = helper.roundAndFormatPrice(priceDiscount) %>
+                            
+                                            <div class="discount-info">
+                                                <span class="old-price"><%=`${helper.formatPrice(item['price'])}đ`%></span>
+                                                <span class="discount">( Tiết kiệm: <%=item['discount']%>% )</span>
+                                            </div>
+                                            
+                                            <p class="price"><%=`${priceDiscount}đ`%></p>
+                                    <% } else { %>
+    
+                                            <div class="discount-info">
+                                                <span class="old-price" style="visibility: hidden;"><%=`${helper.formatPrice(item['price'])}đ`%></span>
+                                                <span class="discount"></span>
+                                            </div>
+                                            
+                                            <p class="price"><%=`${helper.formatPrice(item['price'])}đ`%></p>
+                                    <% } %>
+                                    <% if (item['status'] == 1) { %> 
+                                            <div class="action">
+                                                <p class="available"><i class="fa fa-check"></i> Còn hàng</p>
+                                                <p class="cart" data-discount="<%=item['discount']%>" 
+                                                    data-price="<%=item['price']%>" data-name="<%=item['name']%>" 
+                                                    data-id="<%=item['product_id']%>" data-img="<%=item['thumbnail']%>"
+                                                    data-info="<%= info %>"
+                                                    data-slug="<%= url %>">
+                                                    <i class="bi bi-cart3"></i>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>         
+                                <%} else { %>
+                                            <div class="action">
+                                                <p class="sold-out"><i class="bi bi-telephone-fill"></i> Liên hệ</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% } %>
+                            <% }) %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+        </div>
+    </div>
+   
+    <%- include('../partials/footer') %>
+
+    <script type="module">
+        import { CCart } from '/js/cart.js';
+        let cart =  new CCart
+
+        const btnAddToCart = document.querySelectorAll('.product-item .action .cart')
+
+        btnAddToCart.forEach((btn) => {
+            btn.addEventListener('click', function(e) {
+                const productId = this.getAttribute('data-id')
+                const productName = this.getAttribute('data-name')
+                const productInfo = this.getAttribute('data-info')
+                const productThumbnail = this.getAttribute('data-img')
+                const productSlug = this.getAttribute('data-slug')
+                let productPrice = parseInt(this.getAttribute('data-price'))
+                const productDiscount = parseInt(this.getAttribute('data-discount'))
+
+                if (productDiscount != 0) {
+                    productPrice = productPrice - productPrice * (productDiscount)/100
+                    productPrice = Math.round(productPrice/10000)*10000
+                }
+
+                cart.addToCart({
+                    productId,
+                    quantity: 1,
+                    productName,
+                    productInfo,
+                    productThumbnail,
+                    productPrice,
+                    productSlug
+                })
+
+
+                countProductOfCart.forEach((element) => {
+                    element.innerText = cart.getCountProduct()
+                })
+                
+                showToast({
+                    type: 'success',
+                    title: 'Thêm thành công',
+                    desc: 'Sản phẩm đã được thêm vào giỏ hàng!'
+                })
+            })
+        })
+
+
+    </script>
+
+</body>
+</html>
+

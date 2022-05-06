@@ -1,0 +1,251 @@
+    <%- include('./header') %>
+    
+    
+    <div class="content-wrapper">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">Tổng quan</h5>
+                        </div>
+                        <div class="card-body dashboard">
+                            <div class="row">
+                                
+                                <div class="col-xl-3">
+                                        <div class="box-info bg-info">
+                                            <div class="top">
+                                                <div class="content">
+                                                    <h4 class="title"><%= dataCountCart %></h4>
+                                                    <p>Đơn hàng</p>
+                                                </div>
+                                                <div class="icon">
+                                                    <i class="fa-solid fa-bag-shopping"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-3">
+                                        <div class="box-info bg-success">
+                                            <div class="top">
+                                                <div class="content">
+                                                    <h4 class="title"><%= dataCountProduct %></h4>
+                                                    <p>Sản phẩm</p>
+                                                </div>
+                                                <div class="icon">
+                                                    <i class="fa-solid fa-book"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-3">
+                                        <div class="box-info bg-warning">
+                                            <div class="top">
+                                                <div class="content">
+                                                    <h4 class="title"><%= revenue %></h4>
+                                                    <p>Doanh thu (triệu)</p>
+                                                </div>
+                                                <div class="icon">
+                                                    <i class="fa-solid fa-list"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-3">
+                                        <div class="box-info bg-danger">
+                                            <div class="top">
+                                                <div class="content">
+                                                    <h4 class="title"><%= dataCountCustomer %></h4>
+                                                    <p>Khách hàng</p>
+                                                </div>
+                                                <div class="icon">
+                                                    <i class="fa-solid fa-user-plus"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xl-8">
+                                    <canvas id="revenue-chart"></canvas>
+                                </div>
+                                <div class="col-xl-4">
+                                    <canvas id="best-seller-product-chart"></canvas>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xl-8">
+                                    <canvas id="count-cart-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Close admin-wrapper -->
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js" integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+
+    const revenueChartElement = document.getElementById('revenue-chart');
+    const countCartChartElement = document.getElementById('count-cart-chart')
+    const bestSelletProductChartElement = document.getElementById('best-seller-product-chart');
+
+    function handleCartChart() {
+        $.ajax({
+            url: "/api/v1/cart/getChart",
+            type: 'get',
+            dataType: 'json',
+            success: function(result) {
+                console.log(result)
+                const data = result.data
+                let labels = []
+                let dataCount = []
+
+                data.forEach((item) => {
+                    labels.push(item.date.slice(0, 10))
+                    dataCount.push(item.count)
+                })
+
+                const dataChart = {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Số đơn đặt hàng',
+                        data: dataCount,
+                        fill: true,
+                        borderColor: '#ff6384',
+                        tension: 0.1,
+                        backgroundColor: 'rgba(255, 99, 132, 0.15)'
+                    }]
+                }
+
+                const config = {
+                    type: 'line',
+                    data: dataChart,
+                    options: {
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Số lượng đơn đặt hàng'
+                            }
+                        }
+                    }
+                }
+                const myChart = new Chart(countCartChartElement, config)
+            }
+        })
+    }
+    
+    function handleRevenueChart() {
+        $.ajax({
+            url: "/api/v1/cart/revenue/getChart",
+            type: 'get',
+            dataType: 'json',
+            success: function(result) {
+
+                console.log(result)
+                const data = result.data
+                let labels = []
+                let dataRevenue = []
+
+                data.forEach((item) => {
+                    labels.push(item.date.slice(0, 10))
+                    dataRevenue.push(item.total)
+                })
+
+                const dataChart = {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Doanh thu',
+                        data: dataRevenue,
+                        fill: true,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                };
+                const config = {
+                    type: 'line',
+                    data: dataChart,
+                    options: {
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Doanh thu toàn thời gian'
+                            }
+                        }
+                    }
+                }
+                const myChart = new Chart(revenueChartElement, config);
+
+            }
+        })
+    }
+
+    function handleBestSellerChart() {
+        $.ajax({
+            url: "/api/v1/cart/bestseller/getChart",
+            type: 'get',
+            dataType: 'json',
+            success: function(result) {
+                let labels = []
+                let dataBestSellerProduct = []
+
+                console.log(result)
+                const data = result.data
+
+                data.forEach((item) => {
+                    labels.push(item.name)
+                    dataBestSellerProduct.push(item.count)
+                })
+
+
+                const dataChart = {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Sản phẩm bán chạy',
+                        data: dataBestSellerProduct,
+                        backgroundColor: [
+                            '#ff6384',
+                            '#e8c3b9',
+                            '#ffce56',
+                            '#8e5ea2'
+                        ],
+                        hoverOffset: 4
+                    }]
+                };
+                const config = {
+                    type: 'pie',
+                    data: dataChart,
+                    options: {
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Sản phẩm bán chạy',
+                            },
+                            legend: {
+                                position: "top",
+                                align: "start"
+                            },
+                        }
+                    }
+                }
+                const myChart = new Chart(bestSelletProductChartElement, config);
+                
+            }
+        })
+    }
+
+      
+    handleRevenueChart()
+    handleCartChart()
+    handleBestSellerChart()
+  
+  </script>
+</body>
+</html>

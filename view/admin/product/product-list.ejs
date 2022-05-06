@@ -1,0 +1,142 @@
+<%- include('../header') %>
+    
+    
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Danh sách sản phẩm</h5>
+                    <% if (error && error != '' && error.length > 0) { %>
+
+                        <div class="alert alert-block alert-danger active">
+                            <p><%= error %></p>
+                        </div>
+
+                    <% } %> 
+                    <% if (success && success != '' && success.length > 0) { %>
+
+                        <div class="alert alert-block alert-success active">
+                            <p><%= success %></p>
+                        </div>
+
+                    <% } %> 
+                </div>
+                <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Mã sản phẩm</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Danh mục</th>
+                            <th>Trạng thái</th>
+                            <th>Giá tiền (VND)</th>
+                            <th>Ngày thêm</th>
+                            <th>Giảm giá (%)</th>
+                            <th colspan="2">Chức năng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    <% if (data && data.length > 0) { %>
+                        <% const status = ['Hết hàng', 'Còn hàng'] %> 
+                        <% data.forEach((item, index) => { %>
+                            <% let statusClass = 'btn-secondary' %> 
+                            <% if (item['status'] == 1) { %>
+                            <%     statusClass = 'btn-success' %>   
+                            <% } %>     
+                            <tr>
+                                <td><%= ++index %> </td>
+                                <th><%= item['product_id'] %> </th>
+                                <td class="text-left"><%= item['name'] %></td>
+                                <td><%= item['category_name'] %></td>
+                                <td><button class="btn <%= statusClass %> "><%= status[item['status']] %> </button></td>
+                                <td><%= helper.formatPrice(item['price']) %>đ</td>
+                                <td><%= helper.formatDate(item['created_at']) %></td>
+                                <td><%= item['discount'] %> </td>
+                                <td><a href="product/update/<%= item['product_id'] %>"  class="btn btn-primary">Update</a></td>
+                                <td><button data-id="<%= item['product_id'] %>" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal-delete">Delete</button></td>
+                            </tr>
+
+                        <% }) %> 
+
+                     <% } %>    
+                     
+                    </tbody>
+                    </table>
+
+                    <%- pagination %> 
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Close admin-wrapper -->
+</div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="modal-delete" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Xóa sản phẩm?</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Bạn có chắc muốn xóa sản phẩm này không?
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+              <button type="button" class="btn btn-danger btn-confirm-delete">Xóa</button>
+            </div>
+          </div>
+        </div>
+    </div>
+
+
+<script>
+    const btnConfirmDelete = document.querySelector('.btn-confirm-delete')
+
+    const modalDelete = document.getElementById('modal-delete')
+
+    modalDelete.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget
+      
+        const productId = button.getAttribute('data-id')
+
+        btnConfirmDelete.setAttribute('data-id', productId)
+
+    })
+
+    btnConfirmDelete.addEventListener('click', function() {
+        const productId = this.getAttribute('data-id')
+        callApiDeleteProduct(productId)
+
+    })
+
+    function callApiDeleteProduct(productId) {
+        $.ajax({
+            url: `/api/v1/product/${productId}`,
+            type: 'delete',
+            dataType: 'json',
+            success: function(result) {
+                console.log(result)
+                if (result.status == 'success') {
+                    alert('Đã xóa thành công')
+                    location.reload()
+                } else {
+                    alert('Thất bại')
+                }
+            }
+        })
+    }
+
+</script>
+
+    <%- include('../footer') %>
+
+</body>
+</html>

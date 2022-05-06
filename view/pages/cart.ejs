@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head.ejs') %>
+    <link rel="stylesheet" href="/css/cart.css">
+</head>
+<body>
+
+    <%- include('../partials/header') %>
+    <div class="breadcrumb">
+        <div class="container">
+            <div class="breadcrumb-content">
+                <ul>
+                    <li>
+                        <a href="/">Trang chủ </a>
+                    </li>
+                    <li>
+                        <a href="">Giỏ hàng</a>
+                    </li>
+                </ul>
+                <div class="loading">
+                    <img src="/image/loading-2.gif" alt="">
+                </div>
+               
+            </div>
+        </div>
+    </div>
+    <div class="cart step-1">
+        <div class="container">
+            <div class="row">
+                <div class="col col-xl-9 col-12 col-sm-12">
+                    <div class="cart-content-left">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <td>Sản phẩm</td>
+                                    <td>Đơn giá</td>
+                                    <td>Số lượng</td>
+                                    <td>Thành tiền</td>
+                                    <td>Chức năng</td>
+                                </tr>
+                            </thead>
+                           
+                            <tbody class="cart-product-list">
+                               
+                            </tbody>          
+                        </table>
+                    </div>
+                </div>
+                <div class="col col-xl-3 col-12 col-sm-12">
+                    <div class="cart-content-right">
+                        <div class="box-cart-voucher">
+                            <div class="voucher-group">
+                                <input type="text" placeholder="Mã giảm giá">
+                                <button class="btn btn-apply-discount-code">Áp dụng</button>
+                            </div>
+                        </div>
+                        <div class="box-cart-total-price">
+                            <div class="row">
+                                <p>Tạm tính</p>
+                                <p class="total-cart-price">đ</p>
+                            </div>
+                            <div class="row">
+                                <p>Giảm giá</p>
+                                <p class="price-discount">0₫</p>
+                            </div>
+                            <div class="row">
+                                <p>Thành tiền</p>
+                                <p class="color-red total-cart-payment">đ</p>
+                            </div>
+                        </div>
+                        <a href="/gio-hang/thanh-toan" class="btn btn-buy-submit-cart">Tiến hành đặt hàng</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+    <%- include('../partials/footer') %>
+
+    <script type="module">
+        import { CCart } from '/js/cart.js'
+        import { isInteger } from '/js/validate.js'
+
+        let cart =  new CCart
+
+        const loadingElement = document.querySelector('.loading')
+
+        const tbodyCartProductList = document.querySelector('.cart-product-list')
+        const totalCartElement = document.querySelector('.total-cart-price')
+        const totalPaymentElement = document.querySelector('.total-cart-payment')
+
+        const cartContentElement = document.querySelector('.cart .row')
+
+
+        const productList = cart.getAll()
+
+        let cartEmptyHTML = `<div class="cart-empty">
+                                <img src="https://www.hanoicomputer.vn/template/july_2021/images/tk-shopping-img.png" alt="">
+                                <p>Không có sản phẩm nào trong giỏ hàng của bạn!</p>
+                                <a href="/" class="btn btn-back-home">Tiếp tục mua sắm</a>
+                            </div>`
+        let html = ``
+        let totalCart = cart.getTotal()
+
+        let totalCartFormat = new Intl.NumberFormat('de-DE').format(totalCart)
+
+        totalCartElement.innerText = `${totalCartFormat}đ`
+        totalPaymentElement.innerHTML = `${totalCartFormat}đ`
+
+
+        function int() {
+            if (cart.getCountProduct() > 0) {
+
+                cart.toHTML()
+                let html = cart.getHTML()
+                tbodyCartProductList.innerHTML = html
+
+            } else {
+                cartContentElement.innerHTML = cartEmptyHTML
+            }
+
+        }
+
+        int()
+
+
+        tbodyCartProductList.addEventListener('click', async function(e) {
+            if (e.target.closest('.btn-delete-from-cart')) {
+                const btnDelete = e.target.closest('.btn-delete-from-cart')
+                const productId = btnDelete.getAttribute('data-id')
+
+                cart.deleteItem(productId)
+
+                const countCart = cart.getCountProduct()
+                countProductOfCart.forEach((element) => {
+                    element.innerText = cart.getCountProduct()
+                })
+
+                if (countCart > -0) {
+                    await cart.toHTML()
+                    let html = cart.getHTML()
+                    tbodyCartProductList.innerHTML = html
+                    
+                } else {
+                    
+                    cartContentElement.innerHTML = cartEmptyHTML
+                }
+                
+                handleUpdateTotalCart()
+                
+            }
+        })
+
+        tbodyCartProductList.addEventListener('change', function(e) {
+            if (e.target.closest('.input-quantity')) {
+                const inputQuantity = e.target.closest('.input-quantity')
+                const tr = inputQuantity.parentElement.parentElement.parentElement.parentElement
+                const quantity = inputQuantity.value
+                const productId = inputQuantity.getAttribute('data-id')
+
+                if (!isInteger(quantity)) {
+                    if (parseInt(quantity) && quantity >= 1) {
+                        inputQuantity.value = parseInt(quantity)
+                    }
+                    else {
+                        inputQuantity.value = 1
+                    }
+                    // console.log({productId, quantity: inputQuantity.value})
+                    updateQuantity({productId, quantity: inputQuantity.value, tr})
+                    return
+                }
+                if (quantity < 1) {
+                    inputQuantity.value = 1
+                } 
+                updateQuantity({productId, quantity: inputQuantity.value, tr})
+            }
+        })
+
+        tbodyCartProductList.addEventListener('click', function(e) {
+            if (e.target.closest('.add.btn-quantity-change')) {
+                const btnAddQuantity  = e.target.closest('.add.btn-quantity-change')
+                const boxQuanity = btnAddQuantity.parentElement
+                const tr = boxQuanity.parentElement.parentElement.parentElement
+                const inputQuantity = boxQuanity.children[1]
+                const productId = inputQuantity.getAttribute('data-id')
+                let quantity = inputQuantity.value
+                inputQuantity.value = ++quantity
+
+                updateQuantity({productId, quantity: inputQuantity.value, tr})
+            } 
+
+            if (e.target.closest('.sub.btn-quantity-change')) {
+                const btnAddQuantity  = e.target.closest('.sub.btn-quantity-change')
+                const boxQuanity = btnAddQuantity.parentElement
+                const tr = boxQuanity.parentElement.parentElement.parentElement
+                const inputQuantity = boxQuanity.children[1]
+                const productId = inputQuantity.getAttribute('data-id')
+                let quantity = inputQuantity.value
+
+                if (quantity <= 1) {
+                    showToast({
+                        type: 'error',
+                        title: 'Có lỗi !',
+                        desc: 'Số lượng không được nhỏ hơn 1 !',
+                        duration: 1400
+                    })
+                    return
+                }
+                inputQuantity.value = --quantity
+                updateQuantity({productId, quantity: inputQuantity.value, tr})
+            } 
+
+        })
+
+        function updateQuantity({productId, quantity, tr}) {
+
+            const tdTotalItemPrice = tr.children[3].firstElementChild
+            quantity = parseInt(quantity)
+
+            const itemPrice = parseInt(tr.getAttribute('data-price'))
+            const totalItemPrice = itemPrice *  quantity
+            const totalItemPriceFormat = new Intl.NumberFormat('de-DE').format(totalItemPrice)
+
+            cart.updateQuantityById({productId, quantity})
+
+            tdTotalItemPrice.innerText = `${totalItemPriceFormat}đ`
+
+            handleUpdateTotalCart()
+
+        }
+
+        function handleUpdateTotalCart() {
+            let totalCart = cart.getTotal()
+            let totalCartFormat = new Intl.NumberFormat('de-DE').format(totalCart)
+
+            totalCartElement.innerText = `${totalCartFormat}đ`
+            totalPaymentElement.innerHTML = `${totalCartFormat}đ`
+
+        }
+        handleUpdateTotalCart()
+
+    </script>
+
+</body>
+</html>
+

@@ -1,0 +1,270 @@
+    
+    <%- include('./header') %>
+
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-xl-12 col-12 col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Thông tin tài khoản</h5>
+
+                        <div class="alert alert-block">
+                            <p></p>
+                        </div>
+    
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-xl-3 col-12 col-sm-12">
+                                <label for="" class="form-label">Email</label>
+                                <input id="email" readonly type="text" class="form-control" value="<%= customer.email %>">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-3 col-12 col-sm-12">
+                                <label for="" class="form-label">Họ và tên</label>
+                                <input readonly type="text" class="form-control" value="<%= customer.fullName %>">
+                            </div>
+                           
+                        </div>
+
+                        <% if (address.length > 0) {  %>
+                            <div class="row mt-4">
+                                <h4>Địa chỉ giao hàng của bạn</h4>
+                        <%   address.forEach((item) => { %>
+                                <div class="col-xl-6 col-12 col-sm-12 mt-3">
+                                    <div class="row">
+                                        <div class="col-xl-9 col-12 col-sm-12">
+                                            <input readonly type="text" class="form-control address" value="<%= item['address'] %>">      
+                                            <button type="hidden" class="btn btn-primary btn-submit-update mt-2">Xác nhận</button>
+                                        </div>
+                                        <div class="col-xl-3 col-12 col-sm-12">
+                                            <button data-id="<%= item['id'] %>" data-status="<%= item['active'] %>" type="button" class="btn btn-warning btn-update-address">Sửa</button>
+                                            <button data-id="<%= item['id'] %>" type="button" class="btn btn-danger btn-delete-address">Xóa</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                        <%    }) %>
+                            </div>
+
+                        <% } %> 
+                        
+                        <button type="button" class="btn btn-success add-new-address">Thêm địa chỉ giao hàng</button>
+                        <div class="box-add-address">
+                            <form action="" method="post" id="form-add-address">
+                                <div class="row mt-4">
+                                    <div class="col-xl-3 col-12 col-sm-12">
+                                        <label for="" class="form-label">Tỉnh/Thành phố</label>
+                                        <select name="province" class="form-select" id="buyer_province">
+                                            <option value="">Tỉnh/Thành phố</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-3 col-12 col-sm-12">
+                                        <label for="" class="form-label">Quận/Huyện</label>
+                                        <select name="district" class="form-select" id="buyer_district">
+                                            <option value="">Quận/Huyện</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-3 col-12 col-sm-12">
+                                        <label for="" class="form-label">Phường/Xã</label>
+                                        <select name="ward" class="form-select" id="buyer_ward">
+                                            <option value="">Phường/Xã</option>
+                                        </select>
+                                    </div>
+                                <div class="row">
+                                    <div class="col-xl-6">
+                                        <label for="">Địa chỉ</label>
+                                        <input required type="text" id="buyer_address" class="form-control" placeholder="Số nhà, tên đường">
+                                    </div>
+                                </div>
+                                </div>
+                                <button type="submit" name="submit-add-address" class="btn btn-submit-add-address btn-success mt-3">Thêm</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Close admin-wrapper -->
+    </div>
+
+
+    <script type="module">
+        import { loadProvince, loadDistrict, loadWard, firstLoad } from '/js/fetchAdress.js'
+
+        const btnAddNewAddress = document.querySelector('.add-new-address')
+        const boxAddNewAddress = document.querySelector('.box-add-address')
+
+        const btnUpdateAddress = document.querySelectorAll('.btn-update-address')
+        const btnDeleteAddress = document.querySelectorAll('.btn-delete-address')
+
+        const buyerProvince = document.getElementById('buyer_province')
+        const buyerDistrict = document.getElementById('buyer_district')
+        const buyerWard = document.getElementById('buyer_ward')
+
+        const formAddAddress = document.getElementById('form-add-address')
+
+
+        firstLoad('buyer_province', 'buyer_district', 'buyer_ward')
+
+        buyerProvince.addEventListener('change', async function() {
+            const provinceId = buyerProvince.value
+            buyerWard.innerHTML = '<option value="">Chọn phường/xã</option>'
+            await loadDistrict('buyer_district', provinceId)
+            const districtId = buyerDistrict.value
+            await loadWard('buyer_ward', provinceId, districtId)
+        })
+
+        buyerDistrict.addEventListener('change', async function() {
+            const provinceId = buyerProvince.value
+            const districtId = buyerDistrict.value
+            await loadWard('buyer_ward', provinceId, districtId)
+
+        })
+
+
+      
+
+        btnAddNewAddress.addEventListener('click', function() {
+
+            if (!boxAddNewAddress.classList.contains('active')) {
+                boxAddNewAddress.classList.add('active')
+            }
+        
+        })
+
+
+        formAddAddress.addEventListener('submit', function(e) {
+            e.preventDefault()
+            const province = buyerProvince.options[buyerProvince.selectedIndex].text
+            const district = buyerDistrict.options[buyerDistrict.selectedIndex].text
+            const ward = buyerWard.options[buyerWard.selectedIndex].text
+            const address = document.getElementById('buyer_address').value
+
+            let addressInput = `${address}, ${ward}, ${district}, ${province}`
+            addAddress({ addressInput })
+            
+        })  
+
+        function addAddress({addressInput}) {
+            $.ajax({
+                url: '/api/v1/customer/address',
+                type: 'post',
+                data: {
+                    address: addressInput
+                },
+                dataType: 'json',
+                success: function(result) {
+                    if (result.status == 'success') {
+                        showAlert({ 
+                            type: 'success', 
+                            message: 'Thêm thành công'
+                        })
+
+                        setTimeout(hideAlert, 2000)      
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2400)    
+                    } 
+                    else {
+                        alert('Thất bại!')                  
+                    }
+                }
+            })
+        }
+
+
+        btnUpdateAddress.forEach((btn) => {
+            btn.addEventListener('click', function(e) {
+                const inputElement = this.parentElement.parentElement.children[0].firstElementChild
+                const btnSubmitUpdate = this.parentElement.parentElement.children[0].children[1]
+                inputElement.classList.toggle('update')
+                if (inputElement.classList.contains('update')) {
+                    inputElement.removeAttribute('readonly')
+                    this.innerText = 'Hủy'
+                } else {
+                    inputElement.setAttribute('readonly', true)
+                    this.innerText = 'Xóa'
+                }
+                const addressId = this.getAttribute('data-id')
+
+                btnSubmitUpdate.addEventListener('click', function(e) {
+
+                    updateAddress({ 
+                        id: parseInt(addressId),
+                        address: inputElement.value
+                    })
+                })  
+            })
+        })
+
+        btnDeleteAddress.forEach((btn) => {
+            btn.addEventListener('click', function() {
+
+                const addressId = this.getAttribute('data-id')
+
+                deleteAddress({id: parseInt(addressId)})
+
+            })
+        })
+
+        function updateAddress({ id, address }) {
+            $.ajax({
+                url: `/api/v1/customer/address/${id}`,
+                type: 'put',
+                data: {
+                    address
+                },
+                dataType: 'json',
+                success: function(result) {
+                    if (result.status == 'success') {
+                        showAlert({ 
+                            type: 'success', 
+                            message: 'Cập nhật thành công'
+                        })
+
+                        setTimeout(hideAlert, 2000)      
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2400)     
+                    } 
+                    else {
+                        alert('Thất bại!')                        
+                    }
+                }
+            })
+        }
+
+        function deleteAddress({ id }) {
+            $.ajax({
+                url: `/api/v1/customer/address/${id}`,
+                type: 'delete',
+                dataType: 'json',
+                success: function(result) {
+                    if (result.status == 'success') {
+                        showAlert({ 
+                            type: 'success', 
+                            message: 'Xóa thành công'
+                        })
+
+                        setTimeout(hideAlert, 2000)      
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2400)    
+                    } 
+                    else {
+                        alert('Thất bại!')                        
+                    }
+                }
+            })
+        }
+
+    </script>
+
+    <%- include('./footer') %>
+
+</body>
+</html>

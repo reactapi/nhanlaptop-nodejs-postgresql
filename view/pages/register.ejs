@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head.ejs') %>
+    <link rel="stylesheet" href="/css/register.css">
+</head>
+<body>
+
+    <%- include('../partials/header') %>
+
+   
+    <div class="main">
+        <div class="auth">
+           <div class="container">
+                <h1 class="auth-heading">Đăng ký tài khoản</h1>
+                <div class="register-input-email register">
+                    <form id="form-register" action="" method="POST">
+                        <p class="message-request">Vui lòng nhập thông tin để đăng ký!</p>
+                        <div class="form-group">
+                            <div class="wrapper-input">
+                                <label for="input-email" class="auth-icons fas fa-envelope"></label>
+                                <input required id="input-email" type="text" class="form-control" placeholder="Email">
+                            </div>
+                            <span class="form-message"></span>
+                        </div>
+                        <div class="form-group">
+                            <div class="wrapper-input">
+                                <label for="input-name" class="auth-icons fas fa-user"></label>
+                                <input required id="input-name" type="text" class="form-control" placeholder="Họ và tên">
+                            </div>
+                            <span class="form-message"></span>
+                        </div>
+                        <div class="form-group">
+                            <div class="wrapper-input">
+                                <label for="input-password" class="auth-icons fas fa-lock"></label>
+                                <input required id="input-password" type="password" class="form-control" autocomplete="on" placeholder="Mật khẩu">
+                            </div>
+                            <span class="form-message"></span>
+                        </div>
+                        <div class="form-group">
+                            <div class="wrapper-input">
+                                <label for="input-confirm-password" class="auth-icons fas fa-lock"></label>
+                                <input required id="input-confirm-password" type="password" class="form-control" autocomplete="on" placeholder="Nhập lại mật khẩu">
+                            </div>
+                            <span class="form-message"></span>
+                        </div>
+                        <button class="btn btn-submit" type="submit">Đăng ký</button>
+                        <div class="loading">
+                                <img src="/image/loading-2.gif" alt="">
+                        </div>
+                    </form>
+                    <div class="action">
+                        <span>Bạn đã có tài khoản? </span><a class="link-login" href="/auth/login">Đăng nhập ngay tại đây!</a>
+                    </div>
+                </div>
+           </div>
+        </div>
+    </div>
+    
+    <%- include('../partials/footer') %>
+
+    <script type="module">
+        import { isEmail, isValidName, removeDuplicateSpaceAndTrim, handleUpperCaseFirstLetter } from '/js/validate.js';
+
+        const formRegisterElement = document.getElementById('form-register')
+        const loadingElement = document.querySelector('.auth .loading')
+        const emailInputElement = document.getElementById('input-email')
+        const nameInputElement = document.getElementById('input-name')
+        const passwordInputElement = document.getElementById('input-password')
+        const confirmPasswordInputElement = document.getElementById('input-confirm-password')
+
+        
+        function validateIsEmail(selector) {
+            const emailInputElement = document.getElementById(selector)
+            const email = emailInputElement.value
+
+            let formGroupEmail = emailInputElement.parentElement.parentElement
+            let messageElement = formGroupEmail.querySelector('.form-message')
+            if (!isEmail(email)) {
+                formGroupEmail.classList.add('error')
+                messageElement.innerText = 'Email không hợp lệ!'
+                return false
+            } else {
+                formGroupEmail.classList.remove('error')
+                messageElement.innerText = ''
+                return true
+            }
+        }
+
+        function validateConfirmPassword() {
+            const password = passwordInputElement.value
+            const confirmPassword = confirmPasswordInputElement.value
+
+            let isEquals = true
+
+            if (confirmPassword) {
+                isEquals = password == confirmPassword
+            }
+
+            let formGroupConfirmPassword = confirmPasswordInputElement.parentElement.parentElement
+            let messageElement = formGroupConfirmPassword.querySelector('.form-message')
+
+            if (!isEquals) {
+                formGroupConfirmPassword.classList.add('error')
+                messageElement.innerText = 'Mật khẩu nhập lại không khớp!'
+                return false
+            } else {
+                formGroupConfirmPassword.classList.remove('error')
+                messageElement.innerText = ''
+                return true
+            }
+        }
+
+        function validateName(selector) {
+            const nameInputElement = document.getElementById(selector)
+            let name = nameInputElement.value
+
+            name = removeDuplicateSpaceAndTrim(name)
+            name = handleUpperCaseFirstLetter(name)
+            nameInputElement.value = name
+
+            let formGroupName = nameInputElement.parentElement.parentElement
+            let messageElement = formGroupName.querySelector('.form-message')
+            if (!isValidName(name)) {
+                formGroupName.classList.add('error')
+                messageElement.innerText = 'Họ và tên không hợp lệ!'
+                return false
+            } else {
+                formGroupName.classList.remove('error')
+                messageElement.innerText = ''
+                return true
+            }
+        }
+
+        emailInputElement.addEventListener('blur', function() {
+            validateIsEmail('input-email')
+        })
+
+        confirmPasswordInputElement.addEventListener('blur', function() {
+            validateConfirmPassword()
+        })
+
+        passwordInputElement.addEventListener('blur', function() {
+            validateConfirmPassword()
+        })
+
+        nameInputElement.addEventListener('blur', function() {
+            validateName('input-name')
+        })
+
+        formRegisterElement.addEventListener('submit', function(e) {
+            e.preventDefault()
+            loadingElement.classList.add('show')
+
+            const email = emailInputElement.value
+            const name = nameInputElement.value
+            const password = passwordInputElement.value
+            const confirmPassword = confirmPasswordInputElement.value
+
+            const isValidEmail = validateIsEmail('input-email')
+            const isValidconfirmPassword = validateConfirmPassword()
+            const isValidName = validateName('input-name')
+
+            if (isValidEmail && isValidconfirmPassword && isValidName) {
+                handleCallApiRegister({
+                    email, 
+                    name,
+                    password
+                });
+            } 
+        })
+
+        function handleCallApiRegister({email, name, password}) {
+            $.ajax({
+                url: '/api/v1/auth/register',
+                type: 'post',
+                data: {
+                    email,
+                    name,
+                    password
+                },
+                dataType: 'json',
+                success: function(result) {
+                    loadingElement.classList.remove('show')
+                    console.log(result)
+                    if (result.status == 'success') {
+                        showToast({
+                            type: 'success',
+                            title: 'Thành công!',
+                            desc: 'Tạo tài khoản thành công!'
+                        })
+                        setTimeout(() => {
+                            location.href = '/auth/login'
+                        }, 2000)
+                        
+                    } else {
+                        showToast({
+                            type: 'error',
+                            title: 'Thất bại!',
+                            desc: 'Email đã được sử dụng!'
+                        })
+                    }
+                }
+            })
+        }
+    </script>
+</body>
+</html>
+

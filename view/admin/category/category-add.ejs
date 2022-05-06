@@ -1,0 +1,68 @@
+<%- include('../header') %>
+
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Thêm danh mục</h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="add" method="POST" id="form-add"> 
+                            <div class="row">
+                                <div class="col-xl-3">
+                                    <label for="" class="form-label">Tên danh mục</label>
+                                    <input name="name" required type="text" class="form-control" placeholder="Tên danh mục">
+                                </div>
+                                <div class="col-xl-3">
+                                    <label for="" class="form-label">Đường dẫn</label>
+                                    <input readonly name="categorySlug" required type="text" class="form-control" placeholder="Đường dẫn (slug)">
+                                </div>
+                                <div class="col-xl-3">
+                                    <label for="" class="form-label">Danh mục cha</label>
+                                    <select name="parentId" class="form-select" id="select-category">
+                                        <option selected value="0">Không có</option>
+                                        <% if (category) { %>
+                                            <%  category.forEach((item) => { %>
+                                                <option value="<%= item['id'] %>"><%= item['name'] %></option>
+                                            <%  }) %>
+    
+                                            <% } %> 
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" name="submit-add-category" class="btn btn-danger mt-3">Thêm</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Close admin-wrapper -->
+    </div>
+
+    <script type="module">
+        import { toSlug, removeDuplicateSpaceAndTrim } from '/js/validate.js'
+
+        const categoryNameElement = document.querySelector('#form-add input[name="name"]')
+        const categorySlugElement = document.querySelector('#form-add input[name="categorySlug"]')
+        const inputElements = document.querySelectorAll('#form-add input')
+
+        inputElements.forEach((input) => {
+            input.addEventListener('blur', function() {
+                let inputValue = removeDuplicateSpaceAndTrim(this.value)
+                this.value = inputValue
+            })
+        })
+
+        categoryNameElement.addEventListener('blur',function() {
+            
+            categorySlugElement.value = toSlug(categoryNameElement.value)
+        })
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head.ejs') %>
+    <link rel="stylesheet" href="/css/product-detail.css">
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+</head>
+<body>
+
+    <%- include('../partials/header') %>
+
+    <div class="breadcrumb">
+        <div class="container">
+            <p class="breadcrumb-content">Trang chủ - <%=product['name']%></p>
+        </div>
+    </div>
+    <div class="product-detail">
+        <div class="product-detail-top">
+            <div class="container">
+                <div class="product-detail-header">
+                    <h1 class="title">
+                        <%= product['name'] %>
+                    </h1>
+                </div>
+                <div class="product-detail-content">
+                    <div class="row">
+                        <div class="col col-xl-4">
+                            <div class="product-detail-img">
+                                <div class="img-large">
+                                    <img src="<%=product['thumbnail']%>" alt="">
+                                </div>
+                                <div class="img-list">
+                                    <ul>
+                                        <li class="img-item"><img src="<%=product['thumbnail']%>" alt=""></li>
+                                        <li class="img-item"><img src="https://hanoicomputercdn.com/media/product/61636_laptop_asus_vivobook_m3500qc_7.jpg" alt=""></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col col-xl-5">
+                            <div class="product-detail-info">
+                                <div class="product-detail-meta">
+                                    <p class="product_detail-sku">Mã SP: <%=product['product_id']%></p>
+                                </div>
+                                <div class="product-detail-specification">
+                                    <p class="title">Thông số sản phẩm</p>
+                                    <div class="product-summry" style="line-height: 1.6;">
+                                        <%- product['description'] %> 
+                                    </div>
+                                </div>
+                                <div class="product-detail-price">
+                                <% if (product['discount'] != 0) { %>
+                                <%    let discount = product['price'] * (product['discount'])/100  %>
+                                <%    let priceDiscount = product['price'] - discount %>
+
+                                    <p class="p-discount"><%=`${helper.roundAndFormatPrice(priceDiscount)}đ`%></p>
+                                    <p class="price"><%=`${helper.formatPrice(product['price'])}đ`%></p>
+                                    <p class="discount">Tiết kiệm: <%=`${helper.roundAndFormatPrice(discount)}đ`%></p>
+                                    
+                                <%} else {%>
+                                    <p class="p-discount"><%=`${helper.formatPrice(product['price'])}đ`%></p>
+                                <% } %>
+                                </div>
+                                <div class="product-detail-box-quantity">
+                                    <span>Số lượng: </span>
+                                    <div class="box-quanity-select">
+                                        <button class="sub btn-quantity-change">-</button>
+                                        <input type="number" step="1" min="1" class="input-quantity" value="1" size="5">
+                                        <button class="add btn-quantity-change">+</button>
+                                    </div>
+                                    
+                                    <% if (product['status'] !=0 ) { %>
+
+                                        <button data-discount="<%=product['discount']%>" 
+                                            data-info="<%=`${product['cpu']}/${product['ram']}GB RAM/${product['hard_drive_size']}`%>"
+                                            data-img="<%=product['thumbnail']%>" data-slug="phu-kien/<%=product['slug']%>"
+                                            data-price="<%=product['price']%>" 
+                                            data-name="<%=product['name']%>" 
+                                            data-id="<%=product['product_id']%>" class="btn-add-to-cart" 
+                                            id="btn-add-to-cart">
+                                            <i class="bi bi-cart-check"></i> Thêm vào giỏ hàng
+                                        </button>
+
+                                    <% } else { %>
+
+                                        <button class="btn-out-stock">
+                                            Hết hàng
+                                        </button>
+
+                                    <% } %>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <% if (dataReview && dataReview['content'] != '') { %>
+
+        <div class="review">
+            <div class="container">
+                <div class="review-content">
+                    <%- dataReview['content'] %> 
+                </div>
+            </div>
+        </div>
+
+    <% } %> 
+ 
+    <div class="related-product">
+        <div class="container">
+         <div class="related-product-header">
+                <h2 class="header-title">Sản phẩm tương tự</h2>
+         </div>
+         <div class="related-product-body">
+             <button class="carousel-btn carousel-pre"><i class="fas fa-chevron-left"></i></button>
+             <button class="carousel-btn carousel-next"><i class="fas fa-chevron-right"></i></button>
+             <div class="row slider">
+                <% relatedProduct.forEach((item) => { %>
+                    <div class="col col-xl-2-4">
+                        <div class="product-item">
+                            <a href="/san-pham/phu-kien/<%=item['slug']%>" data-id="<%=item['product_id']%>" class="product-img">
+                                <img src="<%=item['thumbnail']%>" alt="">
+                            </a>
+                            <div class="product-info">
+                                <a href="/san-pham/phu-kien/<%=item['slug']%>">
+                                    <h3 class="product-name">
+                                        <%=`${item['name']} ${item['info']}`%>
+                                    </h3>
+                                </a>
+                <%if (item['discount'] != 0) { %>
+                <%    let priceDiscount = item['price'] - item['price']* (item['discount'])/100;  %>
+                <%    priceDiscount = helper.roundAndFormatPrice(priceDiscount) %>   
+                
+                                <div class="discount-info">
+                                    <span class="old-price"><%=`${helper.formatPrice(item['price'])}đ`%></span>
+                                    <span class="discount">( Tiết kiệm: <%=item['discount']%>% )</span>
+                                </div>
+                                
+                                <p class="price"><%=`${priceDiscount}đ`%></p>
+                <% } else { %>
+
+                                <div class="discount-info">
+                                    <span class="old-price"></span>
+                                    <span class="discount"></span>
+                                </div>
+                                
+                                <p class="price"><%=`${helper.formatPrice(item['price'])}đ`%></p>
+                <%}%>
+                    <% if (item['status'] == 1) { %> 
+                                <div class="action">
+                                    <p class="available"><i class="fa fa-check"></i> Còn hàng</p>
+                                    <p class="cart"><i class="bi bi-cart3"></i></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>         
+                    <% } else { %>
+                                <div class="action">
+                                    <p class="sold-out"><i class="bi bi-telephone-fill"></i> Liên hệ</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <%}%>
+                <%})%>
+             </div>
+         </div>
+        </div>
+     </div>
+
+    <%- include('../partials/footer') %>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
+    <script>
+    $(document).ready(function() {
+
+        $('.slider').slick({
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            arrows: true,
+            infinite: false,
+            prevArrow: $('.carousel-btn.carousel-pre'),
+            nextArrow: $('.carousel-btn.carousel-next'),
+            responsive: [
+                {
+                    breakpoint: 1024,
+                    settings: {
+                        slidesToShow: 3,
+                        slidesToScroll: 1,
+                    }
+                },
+                {
+                    breakpoint: 767,
+                    settings: {
+                        slidesToShow: 2,
+                        slidesToScroll: 1
+                    }
+                },
+                    {
+                    breakpoint: 414,
+                    settings: {
+                        slidesToShow: 2,
+                        slidesToScroll: 1
+                    }
+                }
+            ]
+        });
+
+        let currentSlide = 0;
+
+        const imgDisplay = $('.product-detail-img .img-large img')
+
+        imgDisplay.attr('src', $('.product-detail-img .img-item').eq(0).children('img').attr('src'))
+        $('.product-detail-img .img-item').click(function(e) {
+            $.each($('.product-detail-img .img-item'), function(index, item) {
+                $(this).removeClass('active')
+            })
+            $(this).addClass('active')
+            imgDisplay.attr('src', e.target.src) 
+        })
+
+        
+
+        
+        
+    })
+</script>
+
+<script type="module">
+
+    import { isInteger } from '/js/validate.js'
+    import { CCart } from '/js/cart.js'
+        
+    let cart =  new CCart
+
+    const btnAddToCart = document.getElementById('btn-add-to-cart')
+    const inputQuantityElement = document.querySelector('.input-quantity')
+    const btnChangeQuantityAdd = document.querySelector('.add.btn-quantity-change')
+    const btnChangeQuantitySub = document.querySelector('.sub.btn-quantity-change')
+
+    inputQuantityElement.addEventListener('change', function() {
+        let inputQuantityValue = this.value
+
+        if (!isInteger(inputQuantityValue)) {
+            showToast({
+                type: 'error',
+                title: 'Có lỗi !',
+                desc: 'Số lượng phải là số nguyên dương!',
+                duration: 2000
+            })
+            if (parseInt(inputQuantityValue) && inputQuantityValue >= 1) {
+                this.value = parseInt(inputQuantityValue)
+            }
+            else {
+                this.value = 1
+            }
+            return
+        } 
+        
+        if (inputQuantityValue < 1) {
+            showToast({
+                type: 'error',
+                title: 'Có lỗi !',
+                desc: 'Số lượng không được nhỏ hơn 1 !',
+                duration: 2000
+            })
+            this.value = 1
+        }
+    })
+
+    btnChangeQuantityAdd.addEventListener('click', function() {
+        let inputQuantityValue = inputQuantityElement.value
+        inputQuantityElement.value = ++inputQuantityValue
+    })
+
+    btnChangeQuantitySub.addEventListener('click', function() {
+        let inputQuantityValue = inputQuantityElement.value
+
+        if (inputQuantityValue <= 1) {
+            showToast({
+                type: 'error',
+                title: 'Có lỗi !',
+                desc: 'Số lượng không được nhỏ hơn 1 !',
+                duration: 2000
+            })
+            return
+        }
+        inputQuantityElement.value = --inputQuantityValue
+    })
+
+
+    if (btnAddToCart) {
+        btnAddToCart.addEventListener('click', function() {
+            const productId = this.getAttribute('data-id')
+            const productName = this.getAttribute('data-name')
+            const productInfo = this.getAttribute('data-info')
+            const productThumbnail = this.getAttribute('data-img')
+            const productSlug = this.getAttribute('data-slug')
+            let productPrice = parseInt(this.getAttribute('data-price'))
+            const productDiscount = parseInt(this.getAttribute('data-discount'))
+
+            const quantity = parseInt(inputQuantityElement.value)
+
+            if (productDiscount != 0) {
+                productPrice = productPrice - productPrice * (productDiscount)/100
+                productPrice = Math.round(productPrice/10000)*10000
+            }
+
+            cart.addToCart({
+                productId,
+                quantity: quantity,
+                productName,
+                productInfo,
+                productThumbnail,
+                productPrice,
+                productSlug
+            })
+            countProductOfCart.forEach((element) => {
+                element.innerText = cart.getCountProduct()
+            })
+            showToast({
+                type: 'success',
+                title: 'Thêm thành công',
+                desc: 'Sản phẩm đã được thêm vào giỏ hàng!',
+                duration: 2000
+            })
+        })
+    }
+
+</script>
+</body>
+</html>
+
+

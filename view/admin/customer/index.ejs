@@ -1,0 +1,72 @@
+    
+    <%- include('../header') %>
+
+    <style>
+        .avatar {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 50%;
+            box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Khách hàng</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Mã KH</th>
+                                    <th>Email</th>
+                                    <th>Họ và tên</th>
+                                    <th>Avatar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (data.length > 0) {  %>
+                                <%    data.forEach((item, index) => { %>
+
+                                        <tr>
+                                            <td class="text-center"><%= ++index %> </td>
+                                            <th><%= item['customer_id'] %></th>
+                                            <td><%= item['email'] %></td>
+                                            <td><%= item['full_name'] %></td>
+                                            <% if (item['avatar']) { %>
+                                                <td><img class="avatar" src="<%= item['avatar'] %>" alt=""></td>
+                                            <% } else { %>
+                                                <td><img class="avatar" src="<%= item['avatar_default'] %>" alt=""></td>
+
+                                            <% } %> 
+                                        </tr>
+
+                                    <%  }) %>
+        
+                                <%  } else { %>
+                                
+                                    <tr>
+                                        <th>Chưa có khách hàng nào!</th>
+                                    </tr>
+                                    
+                                <% } %> 
+                            </tbody>
+                        </table>
+                        
+                        <%- pagination %> 
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Close admin-wrapper -->
+</div>
+
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head.ejs') %>
+    <link rel="stylesheet" href="/css/cart.css">
+</head>
+<body>
+
+    <%- include('../partials/header') %>
+    <div class="breadcrumb">
+        <div class="container">
+            <div class="breadcrumb-content">
+                <ul>
+                    <li>
+                        <a href="/">Trang chủ </a>
+                    </li>
+                    <li>
+                        <a href="">Giỏ hàng</a>
+                    </li>
+                </ul>
+               
+            </div>
+        </div>
+    </div>
+    
+    <div class="cart step-2">
+        <div class="container">
+            <div class="row">
+                <div class="col col-xl-7 col-12 col-sm-12">
+                    <div class="cart-content-left">
+                        <h4>2. Địa chỉ giao hàng</h4>
+                        <div class="alert alert-block alert-danger mt-4 require-message">
+                        </div>
+                        <div class="box-address">
+                            <div class="box-address-item">
+                                <label for="">Họ tên</label>
+                                <input type="text" id="buyer_name" class="input-text" value="<%= user.fullName %>">
+                            </div>
+                            <div class="box-address-item">
+                                <label for="">Số điện thoại</label>
+                                <input type="text" id="buyer_mobile" class="input-text" placeholder="Nhập số điện thoại">
+                            </div>
+                            <div class="box-address-item">
+                                <label for="">Email</label>
+                                <input type="text" id="buyer_email" class="input-text" value="<%= user.email %>">
+                            </div>
+
+                            <% let activeBoxAddress = ''
+                                if (!user || address.length <= 0)  {
+                                    activeBoxAddress = 'active'
+                                } %>
+
+                            <% if (address.length > 0) {
+                                    let first = true
+                                    address.forEach((item, index) => { 
+                                        let isChecked = '' 
+                                        if (first) {
+                                            isChecked = 'checked'
+                                            first = false
+                                        } %>
+                                        <div class="box-address-item radio">
+                                            <input name="address" <%= isChecked %> class="form-radio" type="radio" id="radio_<%= index %>" value="<%= item['address'] %>">
+                                            <label for="radio_<%= index %>"><%= item['address'] %></label>
+                                        </div>
+                           
+                            <%    }) %>
+                                        <div class="box-address-item radio">
+                                            <input name="address" id="address-other" class="form-radio" type="radio" value="other">
+                                            <label for="address-other">Địa chỉ khác</label><br>  
+                                        </div>
+
+                            <% } %>
+                                
+                            <div class="wrapper-address <%= activeBoxAddress %>">
+                                <div class="box-address-item">
+                                    <label for="">Tỉnh/Thành phố</label>
+                                    <select name="" id="buyer_province">
+                                        <option value="">Bến Tre</option>
+                                    </select>
+                                </div>
+                                <div class="box-address-item">
+                                    <label for="">Quận/Huyện</label>
+                                    <select name="" id="buyer_district">
+                                        <option value="">Quận/Huyện</option>
+                                    </select>
+                                </div>
+                                <div class="box-address-item">
+                                    <label for="">Phường/Xã</label>
+                                    <select name="" id="buyer_ward">
+                                        <option value="">Phường/Xã</option>
+                                    </select>
+                                </div>
+                                <div class="box-address-item">
+                                    <label for="">Địa chỉ</label>
+                                    <input type="text" id="buyer_address" class="input-text" placeholder="Số nhà, tên đường">
+                                </div>
+                                <input type="hidden" id="buyer_fulladdress" value="">
+                                <input type="hidden" id="buyer_customer_id" value="">
+                            </div>
+                         </div>
+                    </div>
+                </div>
+                <div class="col col-xl-5 col-12 col-sm-12">
+                    <div class="cart-content-right">
+                        <div class="cart-info">
+                            <p class="total-count"></p>
+                            <div class="product-list">
+                              
+                            </div>
+                            <div class="div-total-cart row">
+                                <span>Thành tiền</span>
+                                <span class="total-cart-payment" data-total="">đ</span>
+                            </div>
+                        </div>
+                        <div class="box-pay-method">
+                            <h4>Chọn hình thức thanh toán</h4>
+                           <div class="pay-method-item">
+                            <label for="pay-method2">
+                                    <input checked type="radio" name="pay_method" class="input-radio" id="pay-method2" value="2">
+                                    <span class="txt">Thanh toán khi nhận hàng</span>
+                                </label>
+                           </div>
+                            <button class="btn btn-submit-payment">Tiến hành đặt hàng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+    <%- include('../partials/footer') %>
+
+    <script type="module">
+        import { CCart } from '/js/cart.js'
+        import { isInteger, isEmail } from '/js/validate.js'
+        import { loadProvince, loadDistrict, loadWard, firstLoad } from '/js/fetchAdress.js'
+
+        const cartContentRight = document.querySelector('.cart-content-right')
+        const countProductElement = cartContentRight.querySelector('.total-count')
+        const productListElement = cartContentRight.querySelector('.product-list')
+        const totalCartPayment = cartContentRight.querySelector('.total-cart-payment')
+
+        const inputNameAddress = document.querySelectorAll('.box-address-item input[name=address]')
+
+        const wrapperAddress = document.querySelector('.wrapper-address')
+
+        const buyerProvince = document.getElementById('buyer_province')
+        const buyerDistrict = document.getElementById('buyer_district')
+        const buyerWard = document.getElementById('buyer_ward')
+
+        const fullNameElement = document.querySelector('.box-address-item #buyer_name')
+        const phoneNumberElement = document.querySelector('.box-address-item #buyer_mobile')
+        const emailElement = document.querySelector('.box-address-item #buyer_email')
+
+        const btnSubmitPayment = document.querySelector('.btn-submit-payment')
+
+        const requireMessage = document.querySelector('.require-message')
+
+        firstLoad('buyer_province', 'buyer_district', 'buyer_ward')
+
+        buyerProvince.addEventListener('change', async function() {
+            const provinceId = buyerProvince.value
+            buyerWard.innerHTML = '<option value="">Chọn phường/xã</option>'
+            await loadDistrict('buyer_district', provinceId)
+            const districtId = buyerDistrict.value
+            await loadWard('buyer_ward', provinceId, districtId)
+        })
+
+        buyerDistrict.addEventListener('change', async function() {
+            const provinceId = buyerProvince.value
+            const districtId = buyerDistrict.value
+            await loadWard('buyer_ward', provinceId, districtId)
+
+        })
+        let cart =  new CCart
+
+        function init() {
+            
+            const productList = cart.getAll()
+
+            let countProductOfCart = cart.getCountProduct()
+            let totalCart = cart.getTotal()
+
+            if (countProductOfCart <= 0) {
+                history.back()
+                return
+            }
+
+            let totalCartFormat = new Intl.NumberFormat('de-DE').format(totalCart)
+
+            totalCartPayment.innerText = `${totalCartFormat}đ`
+            totalCartPayment.setAttribute('data-total', totalCart)
+
+            countProductElement.innerText = `${countProductOfCart} sản phẩm`
+
+            let html  = productList.map((product) => {
+                let productPriceFormat = new Intl.NumberFormat('de-DE').format(product.productPrice)
+
+                return `<div class="item">
+                            <span class="count">${product.quantity}x</span>
+                            <span>${product.productName}</span>
+                            <span>${productPriceFormat}đ</span>
+                        </div>`
+            })
+
+            productListElement.innerHTML = html.join('')
+        }
+
+        init()
+        
+        inputNameAddress.forEach((input) => {
+            input.addEventListener('click', function() {
+                const valueRadio = this.value
+                if (valueRadio == 'other') {
+                    if (!wrapperAddress.classList.contains('active')) {
+                        wrapperAddress.classList.add('active')
+                    }
+                } else {
+                    if (wrapperAddress.classList.contains('active')) {
+                        wrapperAddress.classList.remove('active')
+                    }
+                }
+            })
+        })
+
+        btnSubmitPayment.addEventListener('click', function() {
+            let fullName = fullNameElement.value
+            let phoneNumber = phoneNumberElement.value
+            let email = emailElement.value
+            let fullAddress = ''
+
+            const radioAddressSelected = document.querySelector('.box-address-item input[name=address]:checked')
+            
+            if (radioAddressSelected && radioAddressSelected.value != 'other') {
+                fullAddress = radioAddressSelected.value
+
+            } else {
+
+                const province = buyerProvince.options[buyerProvince.selectedIndex].text
+                const district = buyerDistrict.options[buyerDistrict.selectedIndex].text
+                const ward = buyerWard.options[buyerWard.selectedIndex].text
+                const address = document.getElementById('buyer_address').value
+
+                fullAddress = `${address}, ${ward}, ${district}, ${province}`
+
+            }
+            
+            const payMethod = document.querySelector('.pay-method-item input[name=pay_method]:checked').value
+            const total = cart.getTotal()
+            let productList = cart.getAll()
+
+            let arrError = []
+            
+            if (!fullName) {
+                arrError.push(`Vui lòng điền họ và tên!`)
+            }
+
+            if (!phoneNumber) {
+                arrError.push(`Vui lòng điền số điện thoại!`)
+            }
+
+            if (!email) {
+                arrError.push(`Vui lòng điền địa chỉ email`)
+            } else {
+                if (!isEmail(email)) {
+                    arrError.push(`Địa chỉ email không hợp lệ!`)
+                }
+            }
+
+            if (!fullAddress) {
+                arrError.push(`Vui lòng điền địa chỉ giao hàng!`)
+            }
+
+            if (!payMethod) {
+                arrError.push(`Vui lòng lựa chọn phương thức thanh toán!`)
+            }
+
+            if (arrError.length <= 0) {
+                handleAddCart({
+                    fullName,
+                    phoneNumber, 
+                    email,
+                    fullAddress,
+                    total,
+                    payMethod,
+                    cart: JSON.stringify(productList)
+                })
+            } else {
+                let html = ``
+                arrError.forEach((err) => {
+                    html += `<p>${err}</p>`
+                })
+                requireMessage.innerHTML = html
+                if (!requireMessage.classList.contains('active')) {
+                    requireMessage.classList.add('active')
+                }
+            }
+
+            
+
+        })
+
+        function handleAddCart(input) {
+            $.ajax({
+                url: '/api/v1/cart',
+                type: 'post',
+                data: {
+                    ...input
+                },
+                dataType: 'json',
+                success: function(result) {
+                    console.log(result)
+                    if (result.status == 'success') {
+                        showToast({
+                            type: 'success',
+                            title: 'Thành công!',
+                            desc: result.message || 'Đặt hàng thành công!'
+                        })
+                        setTimeout(() => {
+                            location.href = '/'
+                        }, 1400)
+                    } else {
+                        showToast({
+                            type: 'error',
+                            title: 'Thất bại!',
+                            desc: result.message || 'Đặt hàng thất bại!'
+                        })
+                    }
+                }
+            })
+
+        }
+
+       
+
+    </script>
+
+</body>
+</html>
+
