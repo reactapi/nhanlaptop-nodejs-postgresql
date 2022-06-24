@@ -30,6 +30,9 @@
                     <form action="/tim-kiem" method="GET" class="form-search">
                         <div class="form-group">
                             <input type="text"  name="q" class="form-control" placeholder="Tìm kiếm sản phẩm">
+                            <div class="loading">
+                                <img src="/image/loading-2.gif" alt="">
+                            </div>
                             <button type="submit" class="submit"><i class="fas fa-search"></i> Tìm kiếm</button>
                         </div>
                         <div class="live-search-result">
@@ -41,22 +44,17 @@
                 </div>
                <div class="header-left">
                     <div class="wrapper-auth">
-                        <% if (user) { 
-                            let url = 'customer'
-                            if (user.role > 0) {
-                                url = 'user'
-                            } %> 
+                        <% if (user && user.role === 0) { %>
                             <% if (user.avatar) { %>
-                                <a href="/<%= url %>/<%= user.userId %>" class="icon-auth">
+                                <a href="/customer/<%= user.userId %>" class="icon-auth">
                                     <img src="<%= user.avatar %>" alt="">
                                 </a>
     
                             <% } else { %>
-                                <a href="/<%= url %>/<%= user.userId %>" class="icon-auth">
+                                <a href="/customer/<%= user.userId %>" class="icon-auth">
                                     <i class="fas fa-user"></i>
                                 </a>
                             <% } %> 
-                         
 
                         <% } else { %>  
                             <button class="icon-auth">
@@ -70,7 +68,7 @@
                                 <a title="Đăng xuất" href="/auth/logout">Đăng xuất</a>
 
                             <% } else if (user && user.role > 0) { %>
-                                <a href="/user/<%= user.userId %> "><%= helper.formatFullName(user.fullName) %> </a>
+                                <a href="/nhanlaptop-admin/profile"><%= helper.formatFullName(user.fullName) %> </a>
                                 <a title="Đăng xuất" href="/auth/logout">Đăng xuất</a>
                                 
                             <% } else { %>  

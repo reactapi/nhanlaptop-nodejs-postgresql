@@ -117,6 +117,19 @@
     
                                 <div class="filter-group">
                                     <p class="filter-group-title title">Ổ cứng</p>
+                                    <% if (dataHardDrive) { %>
+                                        
+                                        <%    dataHardDrive.forEach((item) => { %>
+                                            <div class="filter-group-item checkbox">
+                                                <label>
+                                                    <input type="checkbox" class="common-selector-filter hard_drive_size" value="<%= item['hard_drive_size'] %>">
+                                                    <span><%= item['hard_drive_size'] %> GB</span>
+                                                </label>
+                                            </div>
+    
+                                        <%    }) %>
+                                            
+                                    <% } %> 
     
                                 </div>
     
@@ -169,7 +182,7 @@
     <script>
         const commonSelectorFilter = document.querySelectorAll('.common-selector-filter')
         const sortItems = document.querySelectorAll('.sort-item')
-        const loadingElement = document.querySelector('.loading')
+        const loadingElement = document.querySelector('#filter-data .loading')
         const resultFilterElement = document.querySelector('#filter-data .result.row')
         const paginationElement = document.querySelector('.pagination .pages')
         const pageSizeElement = document.getElementById('select-page-size')
@@ -257,6 +270,7 @@
             let brand = getFilter('brand')
             let cpu = getFilter('cpu')
             let ram = getFilter('ram')
+            let hardDriveSize = getFilter('hard_drive_size')
             loadingElement.classList.add('show')
 
             $.ajax({
@@ -267,6 +281,7 @@
                    brand,
                    cpu,
                    ram,
+                   hardDriveSize,
                    sort,
                    page,
                    pageSize

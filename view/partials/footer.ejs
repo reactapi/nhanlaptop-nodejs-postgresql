@@ -132,6 +132,7 @@
     const liveSearchProductList = document.querySelectorAll('.live-search-result .search-result')
     const inputSearchElement = document.querySelectorAll('.form-search input')
     const formSearch = document.querySelectorAll('.form-search')
+    const loadingElement = document.querySelector('.wrapper-search .loading')
 
 
     formSearch.forEach((form) => {
@@ -157,24 +158,45 @@
         })
 
     })
+
     
+    const debounce = (fn, delay) => {
+        let timerId
+
+        return function() {
+            const args = arguments
+            // console.log('args:::::', args)
+            //args: Event
+            const _this = this
+            // console.log('this:::::', this)
+            //this : input
+            // console.log('fn:::::', fn)
+            if (timeId) clearTimeout(timerId)
+            timeId = setTimeout(() => {
+                fn.apply(_this, args)
+            }, delay)
+        }
+
+    }
+    
+    const executeLiveSearch = async (e) => {
+        let keyword = e.target.value
+           
+        keyword = removeDuplicateSpaceAndTrim(keyword)
+        if (!noSpecialChars(keyword) && keyword) return
+        loadingElement.classList.add('show')
+        await liveSearch(keyword)
+        if (keyword) {
+            handleActiveLiveSearchResultElement()
+        }
+        else {
+            handleInactiveLiveSearchResultElement()
+        }
+    }
 
 
     inputSearchElement.forEach((input) => {
-        input.addEventListener('keyup', async function(e) {
-            let keyword =this.value
-           
-            keyword = removeDuplicateSpaceAndTrim(keyword)
-            if (!noSpecialChars(keyword) && keyword) return
-
-            await liveSearch(keyword)
-            if (keyword) {
-                handleActiveLiveSearchResultElement()
-            }
-            else {
-                handleInactiveLiveSearchResultElement()
-            }
-        })
+        input.addEventListener('keyup', debounce(executeLiveSearch, 1000))
     })
 
     inputSearchElement.forEach((element) => {
@@ -231,6 +253,7 @@
                 },
                 dataType: "json",
                 success: function(result){
+                    loadingElement.classList.remove('show')
                     let html = `<li style="padding: 8px 12px; font-weight: bold;">Sản phẩm gợi ý</li>`;
                     const data = result.data
                     if (result.status == 'success' && data.length > 0) {
@@ -272,6 +295,8 @@
     function highlightText(keyword, result) {
         let ans = ''
         result.split(' ').forEach((item, index) => {
+            // Neu tung cu trong result (item), includes tung tu trong keyword,
+            // highlight item trong result
             if (isInclude(keyword, item)) {
                 ans += ` <span class="highlight">${item}</span>`
             }
@@ -292,4 +317,5 @@
         })
         return ans
     }
+
 </script>

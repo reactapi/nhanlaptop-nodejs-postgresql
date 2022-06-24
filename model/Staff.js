@@ -1,6 +1,6 @@
 const { queryDatabase } = require('./database')
 
-class User {
+class Staff {
 
     async create(data) {
         try {
@@ -99,4 +99,4 @@ class User {
 
 }
 
-module.exports = new User
+module.exports = new Staff

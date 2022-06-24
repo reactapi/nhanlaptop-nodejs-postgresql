@@ -219,7 +219,7 @@
             quantity = parseInt(quantity)
 
             const itemPrice = parseInt(tr.getAttribute('data-price'))
-            const totalItemPrice = itemPrice *  quantity
+            const totalItemPrice = itemPrice * quantity
             const totalItemPriceFormat = new Intl.NumberFormat('de-DE').format(totalItemPrice)
 
             cart.updateQuantityById({productId, quantity})

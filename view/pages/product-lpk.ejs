@@ -72,7 +72,6 @@
                                     <% if (product['status'] !=0 ) { %>
 
                                         <button data-discount="<%=product['discount']%>" 
-                                            data-info="<%=`${product['cpu']}/${product['ram']}GB RAM/${product['hard_drive_size']}`%>"
                                             data-img="<%=product['thumbnail']%>" data-slug="phu-kien/<%=product['slug']%>"
                                             data-price="<%=product['price']%>" 
                                             data-name="<%=product['name']%>" 
@@ -298,7 +297,6 @@
         btnAddToCart.addEventListener('click', function() {
             const productId = this.getAttribute('data-id')
             const productName = this.getAttribute('data-name')
-            const productInfo = this.getAttribute('data-info')
             const productThumbnail = this.getAttribute('data-img')
             const productSlug = this.getAttribute('data-slug')
             let productPrice = parseInt(this.getAttribute('data-price'))
@@ -315,7 +313,6 @@
                 productId,
                 quantity: quantity,
                 productName,
-                productInfo,
                 productThumbnail,
                 productPrice,
                 productSlug

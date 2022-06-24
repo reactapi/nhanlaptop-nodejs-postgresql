@@ -59,7 +59,7 @@
                                         <tr>
                                             <td class="text-center"><%= ++index %> </td>
                                             <th><%= item['cart_id'] %></th>
-                                            <th><%= item['customer_id'] %></th>
+                                            <th><%= item['customer_id'] || "Khách lẻ" %></th>
                                             <td><%= item['full_name'] %></td>
                                             <td><%= item['phone_number'] %></td>
                                             <td><%= item['email'] %></td>

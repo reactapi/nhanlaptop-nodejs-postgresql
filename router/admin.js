@@ -14,7 +14,7 @@ const { isStaff, isAdmin } = require('../middleware/index')
 const adminController = require('../controller/AdminController')
 const productController = require('../controller/ProductController')
 const categoryController = require('../controller/CategoryController')
-const userController = require('../controller/UserController')
+const staffController = require('../controller/StaffController')
 
 
 router.get('/login', adminController.getLogin)
@@ -36,7 +36,7 @@ router.post('/product/update/thumbnail',
         csrfProtection,
         productController.handleUpdateThumbnail)
 
-router.get('/product/review', isStaff, csrfProtection, adminController.getGetAddAndUpdateReview)
+router.get('/product/review', isStaff, csrfProtection, adminController.getAddAndUpdateReview)
 router.post('/product/review/add', isStaff, csrfProtection, productController.handleAddReview)
 router.post('/product/review/update', isStaff, csrfProtection, productController.handleUpdateReview)
 
@@ -51,20 +51,16 @@ router.post('/category/add', isStaff, categoryController.handleAddCategory)
 router.post('/category/update', isStaff, categoryController.handleUpdateCategory)
 
 
-router.get('/user', isAdmin, adminController.showUserList)
-router.get('/user/create', isAdmin, csrfProtection, adminController.getCreateUser)
-router.post('/user/create', isAdmin, csrfProtection, userController.handleCreateUser)
-
-
+router.get('/staff', isAdmin, adminController.showStaffList)
+router.get('/staff/create', isAdmin, csrfProtection, adminController.getCreateStaff)
+router.post('/staff/create', isAdmin, csrfProtection, staffController.handleCreateStaff)
 
 
 router.get('/customer', isStaff, adminController.showCustomerList)
 
-
-
-
 router.get('/cart', isStaff, adminController.showCartList)
 
+router.get('/profile', isStaff, adminController.getProfile)
 
 router.get('/doi-mat-khau', isStaff, csrfProtection, adminController.getChangePassword)
 

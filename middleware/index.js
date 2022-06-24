@@ -80,21 +80,21 @@ async function isValidCustomerApi(req, res, next) {
     }
 }
 
-async function isValidUser(req, res, next) {
-    try {
-        const userIdParams = req.params.userId
-        const { userId, role } = req.user
+// async function isValidStaff(req, res, next) {
+//     try {
+//         const userIdParams = req.params.userId
+//         const { userId, role } = req.user
             
-        if (userIdParams === userId && role == 2) {
-            next()
-        } else {
-            res.redirect('/')
-        }
+//         if (userIdParams === userId && role == 2) {
+//             next()
+//         } else {
+//             res.redirect('/')
+//         }
         
-    } catch (error) {
-        res.redirect('/')
-    }
-}
+//     } catch (error) {
+//         res.redirect('/')
+//     }
+// }
 
 
 async function isStaffApi(req, res, next) {
@@ -125,7 +125,6 @@ async function isStaff(req, res, next) {
     try {
         const { user } = req
         const { role } = user
-
         if (role >= 2) {
             next()
         } else {
@@ -183,7 +182,7 @@ module.exports = {
     getAccountLoggedIn,
     isValidCustomer,
     isValidCustomerApi,
-    isValidUser,
+    // isValidStaff,
     isStaffApi,
     isStaff,
     isAdminApi,

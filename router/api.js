@@ -9,7 +9,7 @@ const productController = require('../controller/ProductController')
 const customerController = require('../controller/CustomerController')
 const cartController = require('../controller/CartController')
 const categoryController = require('../controller/CategoryController')
-const userController = require('../controller/UserController')
+const staffController = require('../controller/StaffController')
 
 // Middleware
 const { isStaffApi, isAdminApi, isValidCustomerApi } = require('../middleware/index')
@@ -17,15 +17,16 @@ const adminController = require('../controller/AdminController')
 
 router.get('/product/live-search', productController.handleLiveSearch)
 router.get('/product/:productId/check', productController.checkExistsProductId)
+router.get('/product/:productId/is-ordered', productController.checkIsOrdered)
 router.get('/product/:slug/check-slug', productController.checkExistsProductSlug)
 router.get('/product/:productId/review', isStaffApi, productController.handleGetReviewOfProduct)
 router.get('/product/:productId', productController.handleGetProductById)
 
-router.delete('/product/:productId', isStaffApi, productController.handleDeleteProductById)
+router.delete('/product/:productId', isAdminApi, productController.handleDeleteProductById)
 
 
 router.get('/category/:id', isStaffApi, categoryController.getCategoryById)
-router.delete('/category/:id', isStaffApi, categoryController.handleDeleteById)
+router.delete('/category/:id', isAdminApi, categoryController.handleDeleteById)
 
 router.post('/auth/register', authController.postRegister)
 router.post('/auth/login', authController.postLogin)
@@ -33,6 +34,9 @@ router.post('/auth/login', authController.postLogin)
 router.get('/laptop/cpu', productController.getAllCpu)
 router.get('/laptop/ram', productController.getAllRam)
 router.get('/laptop/filter', productController.handleFilterProduct)
+
+
+router.put('/customer/profile', customerController.updateProfile)
 
 router.post('/customer/address', customerController.addAddress)
 router.put('/customer/address/:id', customerController.updateAddress)
@@ -49,7 +53,7 @@ router.get('/cart', isStaffApi, cartController.getCart)
 router.post('/cart', cartController.addCart)  
 
 
-router.delete('/user/:id', isAdminApi, userController.handleDeleteById)
+router.delete('/user/:id', isAdminApi, staffController.handleDeleteById)
 
 
 

@@ -15,6 +15,8 @@ router.get('/:customerId/doi-mat-khau',
         csrfProtection, 
         customerController.getChangePassword)
 
+router.post('/:customerId/profile', isValidCustomer, customerController.updateProfile)
+
 router.get('/:customerId/avatar', 
         isValidCustomer, 
         customerController.getUpdateAvatar)

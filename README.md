@@ -10,11 +10,12 @@
 
 ## CÁC CHỨC NĂNG CHÍNH
 
-- CRUD danh mục, sản phẩm, user
+- CRUD danh mục, sản phẩm, nhân viên
 - Xác thực, phân quyền người dùng
+- Đổi mật khẩu, đặt lại mặt khẩu
 - Lưu trữ ảnh trên Cloudinary
-- Tìm kiếm, lọc sản phẩm
-- Giỏ hàng, đặt hàng
+- Tìm kiếm, live search (có sử dụng debounce), lọc sản phẩm
+- Chức năng giỏ hàng, đặt hàng
 - Thống kê
 
 ## [LINK DEPLOY](https://nhanlaptop.herokuapp.com/)
@@ -24,19 +25,17 @@
 1. Clone dự án về local và trỏ đến thư mục
 
 ```
-    https://github.com/ngonhan71/nhanlaptop-nodejs-mysql.git
-    cd nhanlaptop-nodejs-mysql
+    https://github.com/ngonhan71/nhanlaptop-nodejs-postgresql
+    cd nhanlaptop-nodejs-postgresql
 ```
 
-2. Install package
-
-- Mở Terminal, cài đặt các Dependencies:
+2. Mở Terminal, cài đặt các Dependencies:
 
 ```
     npm install
 ```
 
-1. Tạo file .env, tạo các biến môi trường như sau:
+3. Tạo file .env, tạo các biến môi trường như sau:
    > Các biến về Cloudinary, cần tạo tài khoản cloudinary để nhận được
    >
    > Các biến về Gmail API, vào [Google Developer Console](https://console.cloud.google.com/) để tạo
@@ -63,8 +62,8 @@
     GOOGLE_GMAIL_REFRESH_TOKEN=
 ```
 
-1. Install PostgreSQL. Tạo CSDL _nhanlaptop_, chạy file data.sql
-2. Run
+4. Install PostgreSQL. Tạo CSDL _nhanlaptop_, chạy file data.sql
+5. Run
 
 ```
     node index.js

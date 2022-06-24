@@ -3,7 +3,7 @@ const productModel = require('../model/Product')
 const categoryModel = require('../model/Category')
 const cartModel = require('../model/Cart')
 const customerModel = require('../model/Customer')
-const userModel = require('../model/User')
+const staffModel = require('../model/Staff')
 // const { cloudinary, uploadToCloudinary } = require('../config/cloudinary')
 const helper = require('../helper')
 const jwt = require('jsonwebtoken')
@@ -373,7 +373,7 @@ class AdminController {
 
     }
 
-    async getGetAddAndUpdateReview(req, res) {
+    async getAddAndUpdateReview(req, res) {
         try {
             const user = req.user
 
@@ -426,7 +426,7 @@ class AdminController {
         }
     }
 
-    async showUserList(req, res) {
+    async showStaffList(req, res) {
         try {
             const user = req.user
 
@@ -437,13 +437,13 @@ class AdminController {
             const pageSize = 5
 
 
-            const data =  await userModel.getAll({page, pageSize})
+            const data =  await staffModel.getAll({page, pageSize})
 
-            const count = await userModel.getCount()
+            const count = await staffModel.getCount()
 
             const totalPage = Math.ceil(count / pageSize)
 
-            res.render('admin/user/index', {
+            res.render('admin/staff/index', {
                 user,
                 helper,
                 pagination: pagination(totalPage, page),
@@ -464,11 +464,11 @@ class AdminController {
         
     }
 
-    async getCreateUser(req, res) {
+    async getCreateStaff(req, res) {
         try {
             const user = req.user
            
-            res.render('admin/user/create', {
+            res.render('admin/staff/create', {
                 user,
                 helper,
                 csrfToken: req.csrfToken()
@@ -480,6 +480,24 @@ class AdminController {
                 error
             })
         }
+    }
+
+    async getProfile(req, res) {
+
+        try {
+            const user = req.user
+
+            res.render('admin/profile/index', {
+                user: user, 
+                helper: helper, 
+            })
+            
+        } catch (error) {
+            res.json({
+                error
+            })
+        }
+
     }
 
    

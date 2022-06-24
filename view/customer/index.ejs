@@ -21,11 +21,13 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-xl-3 col-12 col-sm-12">
-                                <label for="" class="form-label">Họ và tên</label>
-                                <input readonly type="text" class="form-control" value="<%= customer.fullName %>">
-                            </div>
-                           
+                            <form action="<%= customer.userId %>/profile" method="post">
+                                <div class="col-xl-3 col-12 col-sm-12">
+                                    <label for="" class="form-label">Họ và tên</label>
+                                    <input name="name" required ="text" class="form-control" value="<%= customer.fullName %>">
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-2">Lưu</button>
+                            </form>
                         </div>
 
                         <% if (address.length > 0) {  %>

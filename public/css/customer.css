@@ -359,6 +359,10 @@ table td {
     color: var(--bs-blue);
 }
 
+.order-status-3 {
+    background-color: #d4edda;
+}
+
 
 @media (min-width: 414px) and (max-width: 767px) {
 

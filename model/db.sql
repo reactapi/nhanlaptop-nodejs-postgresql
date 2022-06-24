@@ -140,6 +140,7 @@ CREATE TABLE customer (
   avatar varchar(500) DEFAULT NULL,
   public_id varchar(255) DEFAULT NULL,
   role smallint NOT NULL DEFAULT '0'
+  code_reset_password varchar(255) DEFAULT NULL,
 )  ;
 
 --
@@ -282,7 +283,6 @@ INSERT INTO accessories_info (product_id, description, info) VALUES
 
 ALTER TABLE address
   ADD PRIMARY KEY (id,customer_id);
-
 
 ALTER TABLE administrator
   ADD PRIMARY KEY (user_id);

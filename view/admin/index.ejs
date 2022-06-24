@@ -1,6 +1,5 @@
     <%- include('./header') %>
     
-    
     <div class="content-wrapper">
             <div class="row">
                 <div class="col-xl-12">
@@ -187,10 +186,13 @@
         })
     }
 
-    function handleBestSellerChart() {
+    function handleBestSellerChart({limit}) {
         $.ajax({
             url: "/api/v1/cart/bestseller/getChart",
             type: 'get',
+            data: {
+                limit
+            },
             dataType: 'json',
             success: function(result) {
                 let labels = []
@@ -214,7 +216,8 @@
                             '#ff6384',
                             '#e8c3b9',
                             '#ffce56',
-                            '#8e5ea2'
+                            '#8e5ea2',
+                            '#36A2EB'
                         ],
                         hoverOffset: 4
                     }]
@@ -244,7 +247,7 @@
       
     handleRevenueChart()
     handleCartChart()
-    handleBestSellerChart()
+    handleBestSellerChart({limit: 5})
   
   </script>
 </body>

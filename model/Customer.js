@@ -7,7 +7,7 @@ class Customer {
 
             const { customerId, email, name, hashPassword } = data
 
-            let sql = `insert into customer(customerId, email, fullName, password) values($1, $2, $3, $4)`
+            let sql = `insert into customer(customer_id, email, full_name, password) values($1, $2, $3, $4)`
             const result = await queryDatabase(sql, [customerId, email, name, hashPassword])
 
             return data
@@ -126,6 +126,63 @@ class Customer {
         
     }
 
+    async resetPassword(data) {
+        try {
+
+            const { hashPassword, customerId } = data
+
+            const sql = `update customer set password = $1, code_reset_password = '' where customer_id = $2`
+            const result = await queryDatabase(sql, [hashPassword, customerId])
+
+            return data
+            
+        } catch (error) {
+            console.log(error)
+            return {
+                error
+            }
+        }
+        
+    }
+
+    async updateCodeToResetPassword(data) {
+        try {
+
+            const { code, customerId } = data
+
+            const sql = `update customer set code_reset_password = $1 where customer_id = $2`
+            const result = await queryDatabase(sql, [code, customerId])
+
+            return data
+            
+        } catch (error) {
+            console.log(error)
+            return {
+                error
+            }
+        }
+        
+    }
+
+    async verifyCodeToResetPassword(data) {
+        try {
+
+            const { code } = data
+
+            const sql = `select * from customer where code_reset_password = $1`
+            const result = await queryDatabase(sql, [code])
+            return result[0]
+            
+        } catch (error) {
+            console.log(error)
+            return {
+                error
+            }
+        }
+        
+    }
+
+
     async updateAvatar(data) {
         try {
 
@@ -135,6 +192,26 @@ class Customer {
                                 where customer_id = $3`
             const result1 = await queryDatabase(sqlUpdate, [avatar,
                 publicId, customerId]) 
+
+            return data
+            
+        } catch (error) {
+            console.log(error)
+            return {
+                error
+            }
+        }
+        
+    }
+
+    async updateProfile(data) {
+        try {
+
+            const { name, customerId } = data
+
+            const sqlUpdate = `update customer set full_name = $1
+                                where customer_id = $2`
+            const result1 = await queryDatabase(sqlUpdate, [name, customerId]) 
 
             return data
             

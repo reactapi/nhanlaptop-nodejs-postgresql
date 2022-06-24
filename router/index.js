@@ -5,13 +5,11 @@ const productRouter = require('./product.js')
 const authRouter = require('./auth')
 const customerRouter = require('./customer')
 const adminRouter = require('./admin')
-const userRouter = require('./user.js')
 
 function route(app) {
     
     app.use('/api/v1', apiRouter)
     app.use('/customer', customerRouter)
-    app.use('/user', userRouter)
     app.use('/san-pham', productRouter)
     app.use('/auth', authRouter)
     app.use('/', homeRouter)

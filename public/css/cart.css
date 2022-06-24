@@ -283,6 +283,9 @@
     cursor: pointer;
 }
 
+.loading img {
+    width: 80px;
+}
 
 /* Responsive */
 

@@ -101,7 +101,6 @@ class SiteController {
             res.render('pages/404')
         }
     }
-   
 }
 
 module.exports = new SiteController;

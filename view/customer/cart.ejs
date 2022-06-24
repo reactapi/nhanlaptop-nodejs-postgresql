@@ -58,7 +58,7 @@
                                 <%    let status = ['Đang chờ xử lý', 'Đã tiếp nhận', 'Đang vận chuyển', 'Đã giao hàng'] %>
                                 <%    dataCart.forEach((item, index) => { %>
 
-                                    <tr>
+                                    <tr class="order-status-<%= item['status'] %>">
                                                 <td class="text-center"><%= ++index %> </td>
                                                 <th><%= item['cart_id'] %></th>
                                                 <td><%= item['full_name'] %></td>

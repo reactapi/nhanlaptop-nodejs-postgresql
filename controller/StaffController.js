@@ -1,43 +1,22 @@
-const {queryDatabase} = require('../model/database')
-const userModel = require('../model/User')
+const staffModel = require('../model/Staff')
 const helper = require('../helper')
 const bcrypt = require('bcrypt');
 const { transporter } = require('../services/nodemailer')
 
-class UserController {
+class StaffController {
 
-    async index(req, res) {
-
-        try {
-            const user = req.user
-
-            res.render('user/index', {
-                user: user, 
-                helper: helper, 
-            })
-            
-        } catch (error) {
-            res.json({
-                error
-            })
-        }
-
-    }
-
-
-    async handleCreateUser(req, res) {
+    async handleCreateStaff(req, res) {
 
         try {
 
             const { email, fullName } = req.body
 
-            console.log('controller', {email, fullName})
 
-            const user = await userModel.findByEmail(email)
+            const user = await staffModel.findByEmail(email)
 
             if (user) {
-                req.flash('error', 'Thêm User thất bại! Email đã tồn tại.')
-                return res.redirect('/nhanlaptop-admin/user')
+                req.flash('error', 'Thêm nhân viên thất bại! Email đã tồn tại.')
+                return res.redirect('/nhanlaptop-admin/staff')
             } else {
                 
                 try {
@@ -45,7 +24,7 @@ class UserController {
                     const password = helper.randomString(10)
                     const hashPassword = await bcrypt.hash(password, 10)
                  
-                    const result = await userModel.create({
+                    const result = await staffModel.create({
                         userId: newUserId,
                         email,
                         fullName,
@@ -68,52 +47,30 @@ class UserController {
 
                     console.log(resultSendMail)
                     
-                    req.flash('success', 'Thêm User hành công!')
-                    return res.redirect('/nhanlaptop-admin/user')
+                    req.flash('success', 'Thêm nhân viên hành công!')
+                    return res.redirect('/nhanlaptop-admin/staff')
     
                 } catch (error) {
                     console.log(error)
-                    req.flash('error', 'Thêm User thất bại!')
-                    return res.redirect('/nhanlaptop-admin/user')
+                    req.flash('error', 'Thêm nhân viên thất bại!')
+                    return res.redirect('/nhanlaptop-admin/staff')
                 }
     
             }
          
             
         } catch (error) {
-            req.flash('error', 'Thêm sản phẩm thất bại!')
-            return res.redirect('/nhanlaptop-admin/product')
+            req.flash('error', 'Thêm nhân viên thất bại!')
+            return res.redirect('/nhanlaptop-admin/staff')
         }
 
-    }
-
-    async showUserList(req, res) {
-        try {
-            const user = req.user
-
-
-            const sql = `select * from administrator`
-            const data =  await queryDatabase(sql)
-
-            res.render('admin/user/user-list', {
-                user,
-                helper,
-                data,
-            })
-            
-
-        } catch (error) {
-            res.json({
-                error
-            })
-        }
     }
 
     async handleDeleteById(req, res) {
         try {
 
             const { id } = req.params
-            const resultDelete = await userModel.deleteById(id)
+            const resultDelete = await staffModel.deleteById(id)
 
             const  { error } = resultDelete
             if (!error) {
@@ -136,6 +93,6 @@ class UserController {
    
 }
 
-module.exports = new UserController;
+module.exports = new StaffController;
 
 

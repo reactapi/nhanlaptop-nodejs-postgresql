@@ -487,6 +487,16 @@
     color: var(--white);
 }
 
+.wrapper-search .loading {
+    position: absolute;
+    top: 0;
+    right: 100px;
+}
+
+.wrapper-search .loading img {
+    width: 40px;
+}
+
 
 @media (min-width: 1024px) and (max-width: 1279px) {
     .container {

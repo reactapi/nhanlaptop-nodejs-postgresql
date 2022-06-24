@@ -3,7 +3,6 @@ const customerModel = require('../model/Customer')
 const cartModel = require('../model/Cart')
 const helper = require('../helper');
 const bcrypt = require('bcrypt')
-const { transporter } = require('../services/nodemailer')
 const { cloudinary, uploadToCloudinary } = require('../services/cloudinary')
 
 
@@ -37,12 +36,31 @@ class CustomerController {
 
     }
 
+    async updateProfile(req, res) {
+        try {
+
+            const { name } = req.body
+            const { userId } = req.user
+
+            const result = await customerModel.updateProfile({
+                name, 
+                customerId: userId
+            })
+
+            req.flash('success', 'Cập nhật thành công!')
+            return res.redirect('back')
+            
+        } catch (error) {
+            req.flash('error', 'Cập nhật thất bại!')
+            return res.redirect('back')
+        }
+    }
+
     async addAddress(req, res) {
         try {
 
             const { address } = req.body
             const { userId } = req.user
-
 
             const result = await customerModel.addAddress({
                 userId,
@@ -154,6 +172,34 @@ class CustomerController {
             res.json({
                 error
             })
+        }
+    }
+
+    
+    async handleResetPassword (req, res) {
+        try {
+            const { code, password } = req.body
+
+            const user = await customerModel.verifyCodeToResetPassword({code: code})
+            
+            if (user) {
+                const hashPassword = await bcrypt.hash(password, 10)
+                const result = await customerModel.resetPassword({
+                    hashPassword: hashPassword,
+                    customerId: user.customer_id
+                })
+                req.flash('success', 'Đổi mật khẩu thành công!')
+                return res.redirect('/auth/login') 
+            }
+
+            req.flash('error', 'Code không hợp lệ!')
+            return res.redirect('back') 
+          
+            
+        } catch (error) {
+            console.log('err', error)
+            req.flash('error', 'Có lỗi xảy ra!')
+            return res.redirect('back') 
         }
     }
 
@@ -279,61 +325,7 @@ class CustomerController {
             return res.redirect('back')
         }
 
-    }
-
-    async handleResetPassword(req, res) {
-
-        try {
-            const { email } = req.body
-
-            const customer = await customerModel.findByEmail(email)
-            
-            if (customer) {
-                const customerId = customer['customer_id']
-                const newPassword =  helper.randomString(10)
-
-                const hashPassword = await bcrypt.hash(newPassword, 10)
-                
-                const result = await customerModel.updatePassword({
-                    hashPassword: hashPassword,
-                    customerId: customerId
-                })
-
-                const  { error } = result
-
-                if (!error) {
-
-                    const resultSendMail = await transporter.sendMail({
-                        from: '"NHAN LAPTOP" <project.php.nhncomputer@gmail.com>',
-                        to: email,
-                        subject: 'Reset password',
-                        html: ` <p>Xin chào,</p>
-                                <p>Bạn vừa yêu cầu reset mật khẩu tài khoản ${email} </p>
-                                <p>Để đăng nhập, hãy sử dụng thông tin mới dưới đây:</p>
-                                <p><b>Tài khoản</b>: <i>${email}</i></p>
-                                <p><b>Mật khẩu</b>: <i>${newPassword}</i></p>
-                                <p>Trân trọng,</p>
-                                <p><b>NHAN LAPTOP</b></p>`
-                    })
-
-                    req.flash('success', 'Mật khẩu đã được reset! Hãy kiểm tra email của bạn')
-                    return res.redirect('back') 
-
-                }
-
-
-            } else {
-                req.flash('error', 'Email không tồn tại!')
-                return res.redirect('back') 
-            }
-            
-        } catch (error) {
-            console.log('err', error)
-            req.flash('error', 'Có lỗi xảy ra!')
-            return res.redirect('back') 
-        }
-
-    }
+    } 
    
 }
 

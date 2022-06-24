@@ -132,6 +132,21 @@ class Cart {
         }
     }
 
+    async isOrdered(id) {
+        try {
+
+            const sql = `   select * from cart_detail
+                            where product_id = $1 `
+            const result = await queryDatabase(sql, [id])
+
+            return result && result.length > 0
+
+        } catch (error) {
+            return error
+        }
+    }
+
+
     async deleteById(id) {
         // Chua xong
         try {
@@ -166,10 +181,12 @@ class Cart {
     async findBestSellerProduct({limit = 4}) {
         try {
 
-            const sql = ` select product.product_id, product.name, count(*) as count from product, cart_detail
-                        where product.product_id = cart_detail.product_id
-                        GROUP by product.product_id, product.name
-                        order by count(*) desc
+            const sql = `select product.product_id, product.name, sum(quantity) as count 
+                        from cart, cart_detail, product
+                        where cart.cart_id = cart_detail.cart_id
+                        and cart_detail.product_id = product.product_id
+                        GROUP by product.product_id
+                        order by sum(quantity)  desc
                         limit $1`
             const result = await queryDatabase(sql, [limit])
 

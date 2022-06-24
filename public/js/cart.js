@@ -103,7 +103,7 @@ export class CCart {
                                         </div>
                                         <div class="col col-xl-8 col-12 col-sm-12">
                                             <div class="product-info">
-                                                <p>${productName} <span class="detail">(${productInfo})</span></p>
+                                                <p>${productName} ${!!productInfo ? `<span class="detail">(${productInfo})</span>` : ""}</p>
                                                 <p>Mã SP: <b>${productId}</b></p>
                                             </div>
                                         </div>
@@ -137,5 +137,11 @@ export class CCart {
 
     getHTML() {
         return this.html
+    }
+
+    destroy() {
+        this.products = []
+        this.html = ``
+        this.saveToLocalStorage()
     }
 }

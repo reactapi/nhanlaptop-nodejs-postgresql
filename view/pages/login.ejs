@@ -16,6 +16,20 @@
                 <div class="login">
                     <form id="form-login" action="" method="POST">
                         <p class="message-request">Đăng nhập vào tài khoản!</p>
+                        <% if (error && error != '' && error.length > 0) { %>
+
+                            <div class="alert alert-block alert-danger active">
+                                <p><%= error %></p>
+                            </div>
+        
+                        <% } %> 
+                        <% if (success && success != '' && success.length > 0) { %>
+        
+                            <div class="alert alert-block alert-success active">
+                                <p><%= success %></p>
+                            </div>
+        
+                        <% } %> 
                         <div class="form-group">
                             <div class="wrapper-input">
                                 <label for="input-email" class="auth-icons fas fa-envelope"></label>
@@ -30,7 +44,7 @@
                             </div>
                             <span class="form-message"></span>
                         </div> 
-                        <a href="/auth/reset-password" class="forgot-password">Quên mật khẩu?</a>
+                        <a href="/auth/forgot-password" class="forgot-password">Quên mật khẩu?</a>
                         <button class="btn btn-submit" type="submit">Đăng nhập</button>
                         <div class="loading">
                             <img src="/image/loading-2.gif" alt="">

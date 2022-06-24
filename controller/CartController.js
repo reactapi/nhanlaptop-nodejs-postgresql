@@ -1,6 +1,7 @@
 const {queryDatabase} = require('../model/database');
 const cartModel = require('../model/Cart')
 const helper = require('../helper');
+const { transporter } = require('../services/nodemailer')
 
 class CartController {
 
@@ -23,8 +24,8 @@ class CartController {
 
     async getBestSellerForChart(req, res) {
         try {
-            
-            const data = await cartModel.findBestSellerProduct({limit: 4})
+            const { limit } = req.query
+            const data = await cartModel.findBestSellerProduct({limit: limit})
             
             res.json({
                 status: 'success',
@@ -43,7 +44,8 @@ class CartController {
         try {
             
             let sql = `select count(*) as count, DATE(created_at) as date from cart 
-                        GROUP by DATE(created_at)`
+                        GROUP by DATE(created_at)
+                        ORDER BY DATE(created_at)`
             let data = await queryDatabase(sql)
             
             res.json({
@@ -135,7 +137,38 @@ class CartController {
             const result = await cartModel.create({
                 cartId, userId, fullName, phoneNumber, email, fullAddress, total, payMethod, cart
             })
+
             
+
+            const htmlProducts = JSON.parse(cart).map(product => {
+                const totalItem = product.quantity * product.productPrice
+                return `<div style="font-size: 16px">
+                            <img style="width: 200px;" src="${product.productThumbnail}" alt="" />
+                            <p>Tên sản phẩm: ${product.productName}</p>
+                            <p>Số lượng: ${product.quantity}</p>
+                            <p>Thành tiền: ${totalItem}</p>
+                        </div>`
+            })
+
+            const resultSendMail = await transporter.sendMail({
+                from: '"NHAN LAPTOP" <project.php.nhncomputer@gmail.com>',
+                to: email,
+                subject: `[NHAN LAPTOP] đã nhận đơn hàng ${cartId}`,
+                html: ` <h3>Xin chào ${fullName},</h3>
+                        <h3>Cảm ơn bạn đã đặt hàng tại NHAN LAPTOP</h3>
+                        <h3>Đơn hàng được giao đến:</h3>
+                        <p>Họ và tên: ${fullName}</p>
+                        <p>Địa chỉ: ${fullAddress}</p>
+                        <p>Điện thoại: ${phoneNumber}</p>
+                        <p>Email: ${email}</p>
+                        <h2>Kiện hàng</h2>
+                        <div>${htmlProducts}</div>
+                        <h2> Tổng giá trị đơn hàng: ${helper.formatPrice(total)} VNĐ</h2>
+                        <p>Trân trọng,</p>
+                        <p><b>NHAN LAPTOP</b></p>`
+            })
+
+            console.log(resultSendMail)
             
             res.json({
                 status: 'success',

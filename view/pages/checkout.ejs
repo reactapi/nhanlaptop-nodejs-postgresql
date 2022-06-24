@@ -121,6 +121,9 @@
                                 </label>
                            </div>
                             <button class="btn btn-submit-payment">Tiến hành đặt hàng</button>
+                            <div class="loading">
+                                <img src="/image/loading-2.gif" alt="">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -134,6 +137,7 @@
         import { CCart } from '/js/cart.js'
         import { isInteger, isEmail } from '/js/validate.js'
         import { loadProvince, loadDistrict, loadWard, firstLoad } from '/js/fetchAdress.js'
+        const loadingElement = document.querySelector('.cart .loading')
 
         const cartContentRight = document.querySelector('.cart-content-right')
         const countProductElement = cartContentRight.querySelector('.total-count')
@@ -276,6 +280,8 @@
             }
 
             if (arrError.length <= 0) {
+                loadingElement.classList.add('show')
+
                 handleAddCart({
                     fullName,
                     phoneNumber, 
@@ -310,12 +316,15 @@
                 dataType: 'json',
                 success: function(result) {
                     console.log(result)
+                    loadingElement.classList.remove('show')
+
                     if (result.status == 'success') {
                         showToast({
                             type: 'success',
                             title: 'Thành công!',
                             desc: result.message || 'Đặt hàng thành công!'
                         })
+                        cart.destroy()
                         setTimeout(() => {
                             location.href = '/'
                         }, 1400)

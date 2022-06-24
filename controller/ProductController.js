@@ -1,5 +1,6 @@
 const {queryDatabase} = require('../model/database');
-const  productModel = require('../model/Product')
+const productModel = require('../model/Product')
+const cartModel = require('../model/Cart')
 const helper = require('../helper');
 const { cloudinary, uploadToCloudinary, deleteCloudinary } = require('../services/cloudinary')
 
@@ -8,7 +9,7 @@ class ProductController {
     
     async handleFilterProduct (req, res) {
         try {
-            const {category, cpu, ram, brand, sort} = req.query
+            const {category, cpu, ram, brand, sort, hardDriveSize } = req.query
         
             let page = req.query.page ? parseInt(req.query.page) : 1
             let pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 4
@@ -34,6 +35,11 @@ class ProductController {
             if (brand) {
                 let brandFilter = brand.join(',')
                 sql += ` and brand IN (${brandFilter})`
+            }
+
+            if (hardDriveSize) {
+                let hardDriveSizeFilter = hardDriveSize.join("','")
+                sql += ` and hard_drive_size IN ('${hardDriveSizeFilter}')`
             }
 
             if (sort) {
@@ -225,12 +231,17 @@ class ProductController {
             const sqlGetRam =   `select distinct ram from laptop_specification order by ram`      
             const dataRam   = await queryDatabase(sqlGetRam)
 
+            const sqlGetHardDrive = `select distinct hard_drive_size 
+                                    from laptop_specification order by hard_drive_size`
+            const dataHardDrive = await queryDatabase(sqlGetHardDrive)
+
             res.render('pages/filter', {
                 user,
                 dataCategory,
                 dataBrand,
                 dataCpu,
                 dataRam,
+                dataHardDrive,
                 categoryActiveId,
                 brandActiveId,
                 helper
@@ -527,21 +538,40 @@ class ProductController {
         }
     }
 
-    async handleDeleteProductById(req, res) {
+    async checkIsOrdered(req, res) {
         try {
 
+            const productId = req.params.productId
+
+            const result = await cartModel.isOrdered(productId)
+            return res.json({
+                status: 'success',
+                result: result,
+                message: result ? "Sản phẩm đã được bán" : "Sản phẩm chưa được bán", 
+            })
+
+        } catch (error) {
+            res.json({
+                error
+            })
+        }
+    }
+
+    async handleDeleteProductById(req, res) {
+        try {
             const productId = req.params.productId
             const sql = `select product.public_id from product where product_id = $1`
             const result = await queryDatabase(sql, [productId])
             const { public_id } = result[0]
-
-            if (public_id) {
-                const reusltCloudinary = await deleteCloudinary(cloudinary, public_id)
-            }
-
+ 
             const resultDelete = await productModel.deleteById(productId)
             const { error } = resultDelete
             if (!error) {
+                if (public_id) {
+                    const reusltCloudinary = await deleteCloudinary(cloudinary, public_id)
+                    console.log(reusltCloudinary)
+                }
+    
                 return res.json({
                     status: 'success',
                 })

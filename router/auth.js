@@ -8,7 +8,10 @@ router.get('/register', authController.getRegister)
 router.get('/login', authController.getLogin)
 router.get('/logout', authController.logout)
 
-router.get('/reset-password', authController.getResetPassword)
+router.get('/forgot-password', authController.getForgotPassword)
+router.post('/forgot-password', authController.handleForgotPassword)
+
+router.get('/reset-password/:code', authController.getResetPassword)
 router.post('/reset-password', customerController.handleResetPassword)
 
 
