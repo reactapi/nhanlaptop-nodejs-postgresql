@@ -18,7 +18,10 @@
 - Chức năng giỏ hàng, đặt hàng
 - Thống kê
 
-## [LINK DEPLOY](https://nhanlaptop.herokuapp.com/)
+## LINK DEPLOY
+- [Website](https://nhanlaptop.herokuapp.com/)
+- [Admin](https://nhanlaptop.herokuapp.com/nhanlaptop-admin/login)
+    - Tài khoản nhân viên (nhanvien@gmail.com/123)
 
 ## Setup Local Development Enviroment
 
