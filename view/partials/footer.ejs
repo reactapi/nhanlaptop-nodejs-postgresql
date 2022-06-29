@@ -171,8 +171,8 @@
             // console.log('this:::::', this)
             //this : input
             // console.log('fn:::::', fn)
-            if (timeId) clearTimeout(timerId)
-            timeId = setTimeout(() => {
+            if (timerId) clearTimeout(timerId)
+            timerId = setTimeout(() => {
                 fn.apply(_this, args)
             }, delay)
         }
