@@ -7,7 +7,7 @@ const csrfProtection = csrf({ cookie: true })
 const authController = require('../controller/AuthController')
 const productController = require('../controller/ProductController')
 const customerController = require('../controller/CustomerController')
-const cartController = require('../controller/CartController')
+const orderController = require('../controller/OrderController')
 const categoryController = require('../controller/CategoryController')
 const staffController = require('../controller/StaffController')
 
@@ -43,14 +43,14 @@ router.put('/customer/address/:id', customerController.updateAddress)
 router.delete('/customer/address/:id', customerController.deleteAddress)
 
 
-router.get('/cart/revenue/getChart', isStaffApi, cartController.getRevenueForChart)
-router.get('/cart/bestseller/getChart', isStaffApi, cartController.getBestSellerForChart)
-router.get('/cart/getChart', isStaffApi, cartController.getCartForChart)
+router.get('/order/revenue/getChart', isStaffApi, orderController.getRevenueForChart)
+router.get('/order/bestseller/getChart', isStaffApi, orderController.getBestSellerForChart)
+router.get('/order/getChart', isStaffApi, orderController.getOrderForChart)
 
-router.put('/cart/:id/status', isStaffApi, cartController.updateStatusCart)
-router.get('/cart/:id', cartController.getCartById)
-router.get('/cart', isStaffApi, cartController.getCart)    
-router.post('/cart', cartController.addCart)  
+router.put('/order/:id/status', isStaffApi, orderController.updateStatusOrder)
+router.get('/order/:id', orderController.getOrderById)
+router.get('/order', isStaffApi, orderController.getOrder)    
+router.post('/order', orderController.createOrder)  
 
 
 router.delete('/user/:id', isAdminApi, staffController.handleDeleteById)

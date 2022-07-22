@@ -9,7 +9,7 @@ const customerController = require('../controller/CustomerController')
 
 
 router.get('/:customerId', isValidCustomer, customerController.index)
-router.get('/:customerId/mycart', isValidCustomer, customerController.showMyCart)
+router.get('/:customerId/myorder', isValidCustomer, customerController.showMyOrder)
 router.get('/:customerId/doi-mat-khau', 
         isValidCustomer, 
         csrfProtection, 

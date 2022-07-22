@@ -1,13 +1,13 @@
 const {queryDatabase} = require('../model/database');
-const cartModel = require('../model/Cart')
+const orderModel = require('../model/Order')
 const helper = require('../helper');
 const { transporter } = require('../services/nodemailer')
 
-class CartController {
+class OrderController {
 
     async getRevenueForChart(req, res) {
         try {
-            const data = await cartModel.getRevenueLifeTime()
+            const data = await orderModel.getRevenueLifeTime()
             
             res.json({
                 status: 'success',
@@ -25,7 +25,7 @@ class CartController {
     async getBestSellerForChart(req, res) {
         try {
             const { limit } = req.query
-            const data = await cartModel.findBestSellerProduct({limit: limit})
+            const data = await orderModel.findBestSellerProduct({limit: limit})
             
             res.json({
                 status: 'success',
@@ -40,10 +40,10 @@ class CartController {
         }
     }
 
-    async getCartForChart(req, res) {
+    async getOrderForChart(req, res) {
         try {
             
-            let sql = `select count(*) as count, DATE(created_at) as date from cart 
+            let sql = `select count(*) as count, DATE(created_at) as date from tblorder 
                         GROUP by DATE(created_at)
                         ORDER BY DATE(created_at)`
             let data = await queryDatabase(sql)
@@ -61,7 +61,7 @@ class CartController {
         }
     }
 
-    async getCart(req, res) {
+    async getOrder(req, res) {
         try {
             
             let user = ''
@@ -69,7 +69,7 @@ class CartController {
                 user = req.user
             } 
 
-            let data = await cartModel.getAll()
+            let data = await orderModel.getAll()
             
             res.json({
                 status: 'success',
@@ -85,7 +85,7 @@ class CartController {
         }
     }
 
-    async getCartById(req, res) {
+    async getOrderById(req, res) {
         try {
             
             const user = req.user
@@ -95,20 +95,19 @@ class CartController {
             let data = []
             if (user.role < 1) {
                 
-                data = await cartModel.findByIdAndCustomerId({
+                data = await orderModel.findByIdAndCustomerId({
                     id: id,
                     customerId: user.userId
                 })
                 
             } else {
-                data = await cartModel.findById(id)
+                data = await orderModel.findById(id)
             }
-
             
             res.json({
                 status: 'success',
                 data,
-                totalCart: data[0]['totalCart'],
+                totalCart: data[0]['total_order'],
                 statusCart: data[0]['status']
             })
 
@@ -120,7 +119,7 @@ class CartController {
         }
     }
 
-    async addCart(req, res) {
+    async createOrder(req, res) {
         try {
             
             let user = ''
@@ -132,13 +131,11 @@ class CartController {
 
             const { fullName, phoneNumber, email, fullAddress, total, payMethod, cart } = req.body
             
-            const cartId = helper.randomString(10)
+            const orderId = helper.randomString(10)
 
-            const result = await cartModel.create({
-                cartId, userId, fullName, phoneNumber, email, fullAddress, total, payMethod, cart
+            const result = await orderModel.create({
+                orderId, userId, fullName, phoneNumber, email, fullAddress, total, payMethod, cart
             })
-
-            
 
             const htmlProducts = JSON.parse(cart).map(product => {
                 const totalItem = product.quantity * product.productPrice
@@ -153,7 +150,7 @@ class CartController {
             const resultSendMail = await transporter.sendMail({
                 from: '"NHAN LAPTOP" <project.php.nhncomputer@gmail.com>',
                 to: email,
-                subject: `[NHAN LAPTOP] đã nhận đơn hàng ${cartId}`,
+                subject: `[NHAN LAPTOP] đã nhận đơn hàng ${orderId}`,
                 html: ` <h3>Xin chào ${fullName},</h3>
                         <h3>Cảm ơn bạn đã đặt hàng tại NHAN LAPTOP</h3>
                         <h3>Đơn hàng được giao đến:</h3>
@@ -183,14 +180,14 @@ class CartController {
         }
     }
 
-    async updateStatusCart(req, res) {
+    async updateStatusOrder(req, res) {
         try {
             
             const { id } = req.params
 
             const { status } = req.body
 
-            const result = await cartModel.updateStatus({
+            const result = await orderModel.updateStatus({
                 id,
                 status
             })
@@ -211,6 +208,6 @@ class CartController {
    
 }
 
-module.exports = new CartController;
+module.exports = new OrderController;
 
 

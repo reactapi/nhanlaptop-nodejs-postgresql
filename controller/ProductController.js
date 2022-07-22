@@ -1,6 +1,6 @@
 const {queryDatabase} = require('../model/database');
 const productModel = require('../model/Product')
-const cartModel = require('../model/Cart')
+const orderModel = require('../model/Order')
 const helper = require('../helper');
 const { cloudinary, uploadToCloudinary, deleteCloudinary } = require('../services/cloudinary')
 
@@ -543,7 +543,7 @@ class ProductController {
 
             const productId = req.params.productId
 
-            const result = await cartModel.isOrdered(productId)
+            const result = await orderModel.isOrdered(productId)
             return res.json({
                 status: 'success',
                 result: result,

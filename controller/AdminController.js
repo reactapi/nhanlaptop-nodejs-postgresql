@@ -1,7 +1,7 @@
 const {queryDatabase} = require('../model/database')
 const productModel = require('../model/Product')
 const categoryModel = require('../model/Category')
-const cartModel = require('../model/Cart')
+const orderModel = require('../model/Order')
 const customerModel = require('../model/Customer')
 const staffModel = require('../model/Staff')
 // const { cloudinary, uploadToCloudinary } = require('../config/cloudinary')
@@ -80,18 +80,18 @@ class AdminController {
 
             const dataCountCustomer =  await customerModel.getCount()
 
-            const dataCountCart =  await cartModel.getCount()
+            const dataCountOrder =  await orderModel.getCount()
 
             const dataCountProduct =  await productModel.getCount()
 
-            const dataRevenue =  await cartModel.getRevenue()
+            const dataRevenue =  await orderModel.getRevenue()
 
             const revenue = Math.floor(dataRevenue / 1000000);
 
             res.render('admin/index', {
                 user,
                 dataCountCustomer,
-                dataCountCart,
+                dataCountOrder,
                 dataCountProduct,
                 revenue,
                 helper
@@ -283,7 +283,7 @@ class AdminController {
         }
     }
 
-    async showCartList(req, res) {
+    async showOrderList(req, res) {
         try {
             const user = req.user
 
@@ -295,13 +295,13 @@ class AdminController {
             const start = (page - 1) * pageSize
 
 
-            const data =  await cartModel.getAll({page, pageSize})
+            const data =  await orderModel.getAll({page, pageSize})
 
-            const count = await cartModel.getCount()
+            const count = await orderModel.getCount()
 
             const totalPage = Math.ceil(count / pageSize)
 
-            res.render('admin/cart/index', {
+            res.render('admin/order/index', {
                 user,
                 helper,
                 pagination: pagination(totalPage, page),

@@ -58,7 +58,7 @@
 
                                         <tr>
                                             <td class="text-center"><%= ++index %> </td>
-                                            <th><%= item['cart_id'] %></th>
+                                            <th><%= item['order_id'] %></th>
                                             <th><%= item['customer_id'] || "Khách lẻ" %></th>
                                             <td><%= item['full_name'] %></td>
                                             <td><%= item['phone_number'] %></td>
@@ -66,7 +66,7 @@
                                             <td><%= item['address'] %></td>
                                             <td><%= helper.formatDate(item['created_at']) %></td>
                                             <td class="text-center"><%= helper.formatPrice(item['total']) %>đ</td>
-                                            <td><select class="status-cart form-select status-<%= item['status'] %>" data-id="<%= item['cart_id'] %>">
+                                            <td><select class="status-cart form-select status-<%= item['status'] %>" data-id="<%= item['order_id'] %>">
                                 <% for (let i = 0; i < status.length; i++) { %>
                                 <%    if (item['status'] == i)  {   %>
                                         <option selected value="<%= i %> "><%= status[i] %> </option>
@@ -78,7 +78,7 @@
                                 <% } %> 
                                         </select></td>
 
-                                            <td><button data-id="<%= item['cart_id'] %>" class="btn btn-show-cart-detail"><i class="fa-solid fa-eye"></i></button></td>
+                                            <td><button data-id="<%= item['order_id'] %>" class="btn btn-show-cart-detail"><i class="fa-solid fa-eye"></i></button></td>
                                         </tr>
 
                                     <%  }) %>
@@ -132,7 +132,7 @@
 
     function updateStatusCart({cartId, status}) {
         $.ajax({
-            url: `/api/v1/cart/${cartId}/status`,
+            url: `/api/v1/order/${cartId}/status`,
             type: 'put',
             data: {
                 status
@@ -163,7 +163,7 @@
 
     function handleGetCartInfo(cartId) {
         $.ajax({
-            url: `/api/v1/cart/${cartId}`,
+            url: `/api/v1/order/${cartId}`,
             type: 'get',
             dataType: 'json',
             success: function(result) {

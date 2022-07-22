@@ -1,8 +1,8 @@
     
     <%- include('./header') %>
 
-    <div class="container-cart-detail">
-        <div class="cart-detail-content">
+    <div class="container-order-detail">
+        <div class="order-detail-content">
             <div class="header">
                 <h5 class="card-title">Chi tiết đơn hàng</h5>
                 <i class="btn-close"></i>
@@ -19,7 +19,7 @@
                             <th>Thành tiền</th>
                         </tr>
                     </thead>
-                    <tbody id="cart-detail-tbody">
+                    <tbody id="order-detail-tbody">
 
                     </tbody>
                 </table>
@@ -60,7 +60,7 @@
 
                                     <tr class="order-status-<%= item['status'] %>">
                                                 <td class="text-center"><%= ++index %> </td>
-                                                <th><%= item['cart_id'] %></th>
+                                                <th><%= item['order_id'] %></th>
                                                 <td><%= item['full_name'] %></td>
                                                 <td><%= item['phone_number'] %></td>
                                                 <td><%= item['email'] %></td>
@@ -68,7 +68,7 @@
                                                 <td><%= helper.formatDate(item['created_at']) %></td>
                                                 <td class="text-center"><%= helper.formatPrice(item['total']) %>đ</td>
                                                 <td><%= status[item['status']] %></td>
-                                                <td><button data-id="<%= item['cart_id'] %>" class="btn btn-show-cart-detail"><i class="fa-solid fa-eye"></i></button></td>
+                                                <td><button data-id="<%= item['order_id'] %>" class="btn btn-show-order-detail"><i class="fa-solid fa-eye"></i></button></td>
                                             </tr>
 
                                     <%  }) %>
@@ -90,18 +90,18 @@
     <!-- Close admin-wrapper -->
 </div>
 <script>
-    const btnShowCartDetail = document.querySelectorAll('.btn-show-cart-detail')
-    const containerCartDetail = document.querySelector('.container-cart-detail')
-    const cartDetailBody = document.getElementById('cart-detail-tbody')
+    const btnShowOrderDetail = document.querySelectorAll('.btn-show-order-detail')
+    const containerCartDetail = document.querySelector('.container-order-detail')
+    const orderDetailBody = document.getElementById('order-detail-tbody')
     const btnClose = containerCartDetail.querySelector('.btn-close')
 
-    const footerCartDetailElement = document.querySelector('.cart-detail-content .footer .card-title')
+    const footerOrderDetailElement = document.querySelector('.order-detail-content .footer .card-title')
   
 
-    btnShowCartDetail.forEach((btn) => {
+    btnShowOrderDetail.forEach((btn) => {
         btn.addEventListener('click', function() {
             const cartId = this.getAttribute('data-id')
-            handleGetCartInfo(cartId)
+            handleGetOrderDetail(cartId)
             containerCartDetail.classList.add('active')
         })
     })
@@ -111,9 +111,9 @@
     })
 
 
-    function handleGetCartInfo(cartId) {
+    function handleGetOrderDetail(cartId) {
         $.ajax({
-            url: `/api/v1/cart/${cartId}`,
+            url: `/api/v1/order/${cartId}`,
             type: 'get',
             dataType: 'json',
             success: function(result) {
@@ -133,8 +133,8 @@
                                     <td>${totalItem}đ</td>
                                 </tr>`
                     })
-                    footerCartDetailElement.innerText = `Tình trạng: ${arrStatus[result.statusCart]}`
-                    cartDetailBody.innerHTML = html
+                    footerOrderDetailElement.innerText = `Tình trạng: ${arrStatus[result.statusCart]}`
+                    orderDetailBody.innerHTML = html
                 } else {
                     alert('Thất bại!')
                 }

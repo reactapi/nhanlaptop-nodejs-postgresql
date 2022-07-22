@@ -40,8 +40,8 @@ INSERT INTO brand (id, name, slug, alias) VALUES
 (5, 'Dell', 'dell', 'DE'),
 (6, 'Intel', 'intel', 'INTEL');
 
-CREATE TABLE cart (
-  cart_id varchar(15) NOT NULL,
+CREATE TABLE order (
+  order_id varchar(15) NOT NULL,
   customer_id varchar(15) DEFAULT NULL,
   full_name varchar(50) NOT NULL,
   phone_number varchar(11) NOT NULL,
@@ -54,10 +54,10 @@ CREATE TABLE cart (
 )  ;
 
 --
--- SQLINES DEMO *** table cart
+-- SQLINES DEMO *** table order
 --
 
-INSERT INTO cart (cart_id, customer_id, full_name, phone_number, email, address, created_at, total, pay_method, status) VALUES
+INSERT INTO order (order_id, customer_id, full_name, phone_number, email, address, created_at, total, pay_method, status) VALUES
 ('7Nc519B8tS', 'lzXBPgL70H', 'Nhan', '09508434', '19520800@gm.uit.edu.vn', 'KP 7, Phường 1, Thành phố Cà Mau, Cà Mau', '2022-03-20 21:32:09', 80039000, 2, 3),
 ('9m8jdhAWAi', 'lOP7l0ilLT', 'Ngô Nhân', '05994854', 'nhan231@gmail.com', 'Ấp 5, Xã Minh Đức, Huyện Mỏ Cày Nam, Bến Tre', '2022-03-21 22:10:41', 30040000, 2, 0),
 ('aThzVdzQMg', 'lzXBPgL70H', 'Nhan', '9867565', '19520800@gm.uit.edu.vn', 'KP1, Xã Định Môn, Huyện Thới Lai, Cần Thơ', '2022-04-17 13:46:10', 27200000, 2, 3),
@@ -69,22 +69,22 @@ INSERT INTO cart (cart_id, customer_id, full_name, phone_number, email, address,
 -- SQLINES DEMO *** ---------------------------------------
 
 --
--- SQLINES DEMO *** or table cart_detail
+-- SQLINES DEMO *** or table order_detail
 --
 
 -- SQLINES LICENSE FOR EVALUATION USE ONLY
-CREATE TABLE cart_detail (
-  cart_id varchar(15) NOT NULL,
+CREATE TABLE order_detail (
+  order_id varchar(15) NOT NULL,
   product_id varchar(20) NOT NULL,
   quantity int NOT NULL,
   total int DEFAULT NULL
 )  ;
 
 --
--- SQLINES DEMO *** table cart_detail
+-- SQLINES DEMO *** table order_detail
 --
 
-INSERT INTO cart_detail (cart_id, product_id, quantity, total) VALUES
+INSERT INTO order_detail (order_id, product_id, quantity, total) VALUES
 ('7Nc519B8tS', 'LTAC0003', 1, 49999000),
 ('7Nc519B8tS', 'LTDE0001', 2, 30040000),
 ('9m8jdhAWAi', 'LTDE0001', 2, 30040000),
@@ -290,11 +290,11 @@ ALTER TABLE administrator
 ALTER TABLE brand
   ADD PRIMARY KEY (id);
 
-ALTER TABLE cart
-  ADD PRIMARY KEY (cart_id);
+ALTER TABLE order
+  ADD PRIMARY KEY (order_id);
 
-ALTER TABLE cart_detail
-  ADD PRIMARY KEY (cart_id,product_id);
+ALTER TABLE order_detail
+  ADD PRIMARY KEY (order_id,product_id);
 
 ALTER TABLE category
   ADD PRIMARY KEY (id);
@@ -313,9 +313,9 @@ ALTER TABLE product
 ALTER TABLE product_review
   ADD PRIMARY KEY (product_id);
 
-ALTER TABLE cart_detail
-  ADD CONSTRAINT cart_detail_ibfk_1 FOREIGN KEY (cart_id) REFERENCES cart (cart_id),
-  ADD CONSTRAINT cart_detail_ibfk_2 FOREIGN KEY (product_id) REFERENCES produc (product_id);
+ALTER TABLE order_detail
+  ADD CONSTRAINT order_detail_ibfk_1 FOREIGN KEY (order_id) REFERENCES order (order_id),
+  ADD CONSTRAINT order_detail_ibfk_2 FOREIGN KEY (product_id) REFERENCES produc (product_id);
 
 
 ALTER TABLE laptop_specification

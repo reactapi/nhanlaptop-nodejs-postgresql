@@ -2,7 +2,7 @@
 
 ## CÁC CÔNG NGHỆ SỬ DỤNG
 
-- **Frond-End:** HTML, CSS, Javascript, Jquery(Ajax), [Bootstrap](https://getbootstrap.com/)
+- **Front-End:** HTML, CSS, Javascript, Jquery(Ajax), [Bootstrap](https://getbootstrap.com/)
 - **Back-End:** NodeJS(Express)
 - **Database:** SQL(PostgreSQL)
 - **Template Engine:** [EJS](https://ejs.co/)

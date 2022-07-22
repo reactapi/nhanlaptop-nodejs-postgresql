@@ -14,7 +14,7 @@
                                         <div class="box-info bg-info">
                                             <div class="top">
                                                 <div class="content">
-                                                    <h4 class="title"><%= dataCountCart %></h4>
+                                                    <h4 class="title"><%= dataCountOrder %></h4>
                                                     <p>Đơn hàng</p>
                                                 </div>
                                                 <div class="icon">
@@ -98,7 +98,7 @@
 
     function handleCartChart() {
         $.ajax({
-            url: "/api/v1/cart/getChart",
+            url: "/api/v1/order/getChart",
             type: 'get',
             dataType: 'json',
             success: function(result) {
@@ -143,7 +143,7 @@
     
     function handleRevenueChart() {
         $.ajax({
-            url: "/api/v1/cart/revenue/getChart",
+            url: "/api/v1/order/revenue/getChart",
             type: 'get',
             dataType: 'json',
             success: function(result) {
@@ -188,7 +188,7 @@
 
     function handleBestSellerChart({limit}) {
         $.ajax({
-            url: "/api/v1/cart/bestseller/getChart",
+            url: "/api/v1/order/bestseller/getChart",
             type: 'get',
             data: {
                 limit

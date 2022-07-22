@@ -58,7 +58,7 @@ router.post('/staff/create', isAdmin, csrfProtection, staffController.handleCrea
 
 router.get('/customer', isStaff, adminController.showCustomerList)
 
-router.get('/cart', isStaff, adminController.showCartList)
+router.get('/order', isStaff, adminController.showOrderList)
 
 router.get('/profile', isStaff, adminController.getProfile)
 

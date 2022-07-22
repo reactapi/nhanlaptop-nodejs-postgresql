@@ -282,7 +282,7 @@
             if (arrError.length <= 0) {
                 loadingElement.classList.add('show')
 
-                handleAddCart({
+                handleCreateOrder({
                     fullName,
                     phoneNumber, 
                     email,
@@ -306,9 +306,9 @@
 
         })
 
-        function handleAddCart(input) {
+        function handleCreateOrder(input) {
             $.ajax({
-                url: '/api/v1/cart',
+                url: '/api/v1/order',
                 type: 'post',
                 data: {
                     ...input

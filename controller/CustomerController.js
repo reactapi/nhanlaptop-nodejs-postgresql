@@ -1,6 +1,6 @@
 const {queryDatabase} = require('../model/database');
 const customerModel = require('../model/Customer')
-const cartModel = require('../model/Cart')
+const orderModel = require('../model/Order')
 const helper = require('../helper');
 const bcrypt = require('bcrypt')
 const { cloudinary, uploadToCloudinary } = require('../services/cloudinary')
@@ -134,7 +134,7 @@ class CustomerController {
         }
     }
 
-    async showMyCart (req, res) {
+    async showMyOrder (req, res) {
 
         try {
 
@@ -142,9 +142,9 @@ class CustomerController {
             const customer = req.user
 
 
-            const dataCart = await cartModel.getAllCartByCustomer(customerId)
-          
-            res.render('customer/cart', {
+            const dataCart = await orderModel.getAllOrderByCustomer(customerId)
+
+            res.render('customer/order', {
                 customer,
                 helper,
                 dataCart

@@ -1,6 +1,6 @@
 const { queryDatabase }  = require('./database')
 
-class Cart {
+class Order {
 
     async create(data) {
         try {
@@ -8,18 +8,18 @@ class Cart {
             const date = new Date()
             const createdAt = date.toISOString().slice(0, 10) + " " + date.toLocaleTimeString('en-GB')
 
-            const { cartId, userId, fullName, phoneNumber, email, fullAddress, total, payMethod, cart } = data
+            const { orderId, userId, fullName, phoneNumber, email, fullAddress, total, payMethod, cart } = data
 
-            const sql = `insert into cart(cart_id, customer_id, full_name, phone_number, email, address, created_at, total, pay_method, status) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
-            const result1 = await queryDatabase(sql, [cartId, userId, fullName, phoneNumber, email, fullAddress, createdAt, total, payMethod, 0])
+            const sql = `insert into tblorder(order_id, customer_id, full_name, phone_number, email, address, created_at, total, pay_method, status) values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
+            const result1 = await queryDatabase(sql, [orderId, userId, fullName, phoneNumber, email, fullAddress, createdAt, total, payMethod, 0])
 
             const products = JSON.parse(cart)
 
             products.forEach(async (product) => {
                 // let product = products[i]
                 let totalItem = product.quantity * product.productPrice
-                let sql2 = `insert into cart_detail values($1, $2, $3, $4)`
-                let result2 = await queryDatabase(sql2, [cartId, product.productId, product.quantity, totalItem])
+                let sql2 = `insert into order_detail values($1, $2, $3, $4)`
+                let result2 = await queryDatabase(sql2, [orderId, product.productId, product.quantity, totalItem])
             })
 
             return data
@@ -36,7 +36,7 @@ class Cart {
 
             const start = (page - 1) * pageSize
 
-            const sql = `select * from cart order by created_at desc limit $1 offset $2`
+            const sql = `select * from tblorder order by created_at desc limit $1 offset $2`
             const result =  await queryDatabase(sql, [pageSize, start])
             return result
             
@@ -48,7 +48,7 @@ class Cart {
     async getCount() {
         try {
 
-            const sql = `select count(*) as count from cart`
+            const sql = `select count(*) as count from tblorder`
             const result = await queryDatabase(sql)
 
             return result[0]['count']
@@ -60,7 +60,7 @@ class Cart {
     async getRevenue() {
         try {
 
-            const sql = `select sum(total) as total from cart where status = 3`
+            const sql = `select sum(total) as total from tblorder where status = 3`
             const result = await queryDatabase(sql)
 
             return result[0]['total']
@@ -69,10 +69,10 @@ class Cart {
         }
     }
 
-    async getAllCartByCustomer(customerId) {
+    async getAllOrderByCustomer(customerId) {
         try {
 
-            const sql = `select * from cart where customer_id = $1 order by created_at desc`
+            const sql = `select * from tblorder where customer_id = $1 order by created_at desc`
             const result = await queryDatabase(sql, [customerId])
 
             return result
@@ -86,7 +86,7 @@ class Cart {
 
             const { id, status } = data
 
-            const sql = `update cart set status = $1 where cart_id = $2`
+            const sql = `update tblorder set status = $1 where order_id = $2`
             const result = await queryDatabase(sql, [status, id])
 
             return data
@@ -101,14 +101,13 @@ class Cart {
     async findByIdAndCustomerId({id, customerId}) {
         try {
 
-            const sql = ` select *, cart_detail.total as total_item , cart.total as total_cart
-                            from cart_detail, product, cart
-                            where cart.cart_id = $1
-                            and cart_detail.product_id = product.product_id
-                            and cart.cart_id = cart_detail.cart_id
-                            and cart.customer_id = $2`
+            const sql = ` select *, order_detail.total as total_item , tblorder.total as total_order
+                            from order_detail, product, tblorder
+                            where tblorder.order_id = $1
+                            and order_detail.product_id = product.product_id
+                            and tblorder.order_id = order_detail.order_id
+                            and tblorder.customer_id = $2`
             const result = await queryDatabase(sql, [id, customerId])
-
             return result
 
         } catch (error) {
@@ -119,10 +118,10 @@ class Cart {
     async findById(id) {
         try {
 
-            const sql = `   select *, cart_detail.total as total_item from cart_detail, product, cart
-                            where cart.cart_id = $1
-                            and cart_detail.product_id = product.product_id
-                            and cart.cart_id = cart_detail.cart_id`
+            const sql = `   select *, order_detail.total as total_item from order_detail, product, tblorder
+                            where tblorder.order_id = $1
+                            and order_detail.product_id = product.product_id
+                            and tblorder.order_id = order_detail.order_id`
             const result = await queryDatabase(sql, [id])
 
             return result
@@ -135,26 +134,11 @@ class Cart {
     async isOrdered(id) {
         try {
 
-            const sql = `   select * from cart_detail
+            const sql = `   select * from order_detail
                             where product_id = $1 `
             const result = await queryDatabase(sql, [id])
 
             return result && result.length > 0
-
-        } catch (error) {
-            return error
-        }
-    }
-
-
-    async deleteById(id) {
-        // Chua xong
-        try {
-
-            const sql = `delete from category where id = $1`
-            const result = await queryDatabase(sql, [id])
-
-            return id
 
         } catch (error) {
             return error
@@ -166,7 +150,7 @@ class Cart {
     async getRevenueLifeTime() {
         try {
 
-            const sql = ` select sum(total) as total, DATE(created_at) as date from cart 
+            const sql = ` select sum(total) as total, DATE(created_at) as date from tblorder 
                         where status = 3
                         GROUP by DATE(created_at)`
             const result = await queryDatabase(sql)
@@ -182,9 +166,9 @@ class Cart {
         try {
 
             const sql = `select product.product_id, product.name, sum(quantity) as count 
-                        from cart, cart_detail, product
-                        where cart.cart_id = cart_detail.cart_id
-                        and cart_detail.product_id = product.product_id
+                        from tblorder, order_detail, product
+                        where tblorder.order_id = order_detail.order_id
+                        and order_detail.product_id = product.product_id
                         GROUP by product.product_id
                         order by sum(quantity)  desc
                         limit $1`
@@ -199,4 +183,4 @@ class Cart {
 
 }
 
-module.exports = new Cart
+module.exports = new Order
