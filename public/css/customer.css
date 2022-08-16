@@ -294,7 +294,7 @@ table td {
     width: 100px;
 }
 
-.alert {
+.alert.customize {
     opacity: 0;
     visibility: hidden;
     padding: 0;
@@ -302,7 +302,7 @@ table td {
     transition: all ease 0.6s;
 }
 
-.alert.active {
+.alert.customize.active {
     opacity: 1;
     visibility: visible;
     padding: 1rem 1rem;
@@ -310,7 +310,7 @@ table td {
     margin-top: 1rem;
 }
 
-.alert p {
+.alert.customize p {
     margin: 0;
     text-align: center;
     opacity: 0;
@@ -319,7 +319,7 @@ table td {
     transition: all ease 0.55s;
 }
 
-.alert.active p {
+.alert.customize.active p {
     opacity: 1;
     visibility: visible;
     height: auto;

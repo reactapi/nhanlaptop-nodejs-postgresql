@@ -1,10 +1,9 @@
-const {queryDatabase} = require('../model/database');
 const customerModel = require('../model/Customer')
 const orderModel = require('../model/Order')
 const helper = require('../helper');
 const bcrypt = require('bcrypt')
-const { cloudinary, uploadToCloudinary } = require('../services/cloudinary')
-
+const { cloudinary, uploadToCloudinary } = require('../config/cloudinary')
+const { transporter } = require('../config/nodemailer')
 
 class CustomerController {
 
@@ -23,6 +22,8 @@ class CustomerController {
             }
 
             res.render('customer/index', {
+                success: req.flash('success'),
+                error: req.flash('error'),
                 customer: customer, 
                 address: dataAddress,
                 helper: helper, 
@@ -53,6 +54,74 @@ class CustomerController {
         } catch (error) {
             req.flash('error', 'Cập nhật thất bại!')
             return res.redirect('back')
+        }
+    }
+
+    async handleVerifyAccount(req, res) {
+        try {
+            const { userId, fullName, email } = req.user
+
+            const customer = await customerModel.findById(userId)
+
+            if (customer.status === 1) {
+                req.flash('success', 
+                `Tài khoản của bạn đã được xác minh!`)
+                return res.redirect(`/customer/${userId}`) 
+            }
+
+            const code =  helper.randomString(50)
+            const result = await customerModel.updateCodeToVerify({
+                code: code,
+                customerId: userId
+            })
+
+            const { error } = result
+
+            if (!error) {
+                const link = `${process.env.URL_SERVER}/customer/verify/${code}`
+                const resultSendMail = await transporter.sendMail({
+                    from: '"NHANLAPTOP" <project.php.nhncomputer@gmail.com>',
+                    to: email,
+                    subject: `[NHANLAPTOP] Xác minh tài khoản của bạn`,
+                    html: ` <h2>Xin chào bạn ${fullName},</h2>
+                            <p>Bạn vui lòng nhấp vào đường dẫn bên dưới để xác minh tài khoản của bạn.</p>
+                            <a href="${link}"><h3>Đặt lại mật khẩu</h3></a>
+                            <p>Trân trọng,</p>
+                            <p><b>NHANLAPTOP</b></p>`
+                })
+
+                req.flash('success', 
+                `Một email đã được gửi đến ${email}. Vui lòng mở email và làm theo hướng dẫn để xác minh!.`)
+                return res.redirect('back') 
+            }
+            
+
+        } catch (error) {
+            console.log('err', error)
+            req.flash('error', 'Có lỗi xảy ra!')
+            return res.redirect('back') 
+        }
+    }
+
+
+    async handleActiveAccountStatus(req, res) {
+        try {
+            const { code } = req.params
+            const user = await customerModel.verifyCode({code: code})
+
+            if (user) {
+                const result = await customerModel.updateStatus({
+                    status: 1,
+                    customerId: user.customer_id
+                })
+                req.flash('success', 'Xác minh tài khoản thành công!')
+                return res.redirect(`/customer/${user.customer_id}`) 
+            }
+            return res.json({message: "Code không hợp lệ"})
+
+        } catch (error) {
+            console.log('err', error)
+            return res.json({message: "Code không hợp lệ"})
         }
     }
 
@@ -180,7 +249,7 @@ class CustomerController {
         try {
             const { code, password } = req.body
 
-            const user = await customerModel.verifyCodeToResetPassword({code: code})
+            const user = await customerModel.verifyCode({code: code})
             
             if (user) {
                 const hashPassword = await bcrypt.hash(password, 10)
@@ -271,11 +340,9 @@ class CustomerController {
 
             const { userId } = user
 
-            const sql = `select avatar, public_id from customer where customer_id = $1`
+            const result = await customerModel.findById(userId)
 
-            const result = await queryDatabase(sql, [userId])
-
-            const { avatar, public_id } = result[0]
+            const { avatar, public_id } = result
 
             if (avatar && public_id) {
                 // TH da co avatar, call xoa tren Cloudinary

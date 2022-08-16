@@ -68,7 +68,7 @@
                                                 <td><%= helper.formatDate(item['created_at']) %></td>
                                                 <td class="text-center"><%= helper.formatPrice(item['total']) %>đ</td>
                                                 <td><%= status[item['status']] %></td>
-                                                <td><button data-id="<%= item['order_id'] %>" class="btn btn-show-order-detail"><i class="fa-solid fa-eye"></i></button></td>
+                                                <td><button data-id="<%= item['order_id'] %>" class="btn btn-primary btn-show-order-detail"><i class="fa-solid fa-eye"></i></button></td>
                                             </tr>
 
                                     <%  }) %>

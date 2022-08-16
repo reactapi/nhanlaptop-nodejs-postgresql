@@ -42,11 +42,14 @@ class AdminController {
         try {
             const { email, password } = req.body
 
-            let sqlLogin = `select * from administrator where email = $1`
-            const user = await queryDatabase(sqlLogin, [email])
-            if (user.length > 0) {
-                const userId = user[0]['user_id']
-                const passwordInDatabase = user[0]['password']
+            const user = await staffModel.findByEmail(email)
+            if (user) {
+                if (parseInt(user.role) === 2 && parseInt(user.status) === 0) {
+                    req.flash('error', 'Tài khoản của bạn đã bị khóa!')
+                    return res.redirect('back')  
+                }
+                const userId = user['user_id']
+                const passwordInDatabase = user['password']
                 const checkPassword = await bcrypt.compare(password, passwordInDatabase)
 
                 if (checkPassword) {

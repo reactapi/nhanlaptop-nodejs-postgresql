@@ -17,6 +17,10 @@ router.get('/:customerId/doi-mat-khau',
 
 router.post('/:customerId/profile', isValidCustomer, customerController.updateProfile)
 
+router.get('/:customerId/verify', isValidCustomer, customerController.handleVerifyAccount)
+router.get('/verify/:code', customerController.handleActiveAccountStatus)
+
+
 router.get('/:customerId/avatar', 
         isValidCustomer, 
         customerController.getUpdateAvatar)

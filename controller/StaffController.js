@@ -1,7 +1,7 @@
 const staffModel = require('../model/Staff')
 const helper = require('../helper')
 const bcrypt = require('bcrypt');
-const { transporter } = require('../services/nodemailer')
+const { transporter } = require('../config/nodemailer')
 
 class StaffController {
 
@@ -66,13 +66,14 @@ class StaffController {
 
     }
 
-    async handleDeleteById(req, res) {
+    async handleUpdateAccountStatus(req, res) {
         try {
 
             const { id } = req.params
-            const resultDelete = await staffModel.deleteById(id)
+            const { status } = req.body
+            const result = await staffModel.updateStatus({id, status})
 
-            const  { error } = resultDelete
+            const  { error } = result
             if (!error) {
                 return  res.json({
                     status: 'success',

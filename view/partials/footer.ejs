@@ -70,7 +70,7 @@
     const run = progress.querySelector('.run')
     const closeToast = document.querySelector('#toast .close')
     let timeId
-    function showToast({type, title, desc, duration = 4000}) {
+    function showToast({type, title, desc, duration = 3000}) {
 
         
         const icons = {
@@ -140,19 +140,17 @@
         form.addEventListener('submit', function (e) {
             const input = form.querySelector('input')
             let value = input.value
-
             
             input.value = removeDuplicateSpaceAndTrim(value)
             
             value = input.value
             
-            console.log(value)
             if (!(noSpecialChars(removeAscent(value)) && value != '')) {
                 e.preventDefault();
                 showToast({
                     type: 'error',
                     title: 'Có lỗi !',
-                    desc: 'Vui lòng không nhập các kí tự đặc biệt!'
+                    desc: 'Vui lòng nhập từ khóa hợp lệ'
                 })
             }
         })
@@ -183,7 +181,7 @@
         let keyword = e.target.value
            
         keyword = removeDuplicateSpaceAndTrim(keyword)
-        if (!noSpecialChars(keyword) && keyword) return
+        if (!(noSpecialChars(removeAscent(keyword)) && !!keyword)) return
         loadingElement.classList.add('show')
         await liveSearch(keyword)
         if (keyword) {
@@ -244,7 +242,7 @@
     
 
     function liveSearch(keyword) {
-        keyword = removeDuplicateSpaceAndTrim(keyword);
+        console.log(keyword)
         $.ajax({
             url: "/api/v1/product/live-search",
                 type: "GET",

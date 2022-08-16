@@ -7,14 +7,39 @@
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title">Thông tin tài khoản</h5>
-
-                        <div class="alert alert-block">
+                        <div class="alert customize alert-block">
                             <p></p>
                         </div>
+                        <% if (error && error != '' && error.length > 0) { %>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <p><%= error %></p>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
     
+                        <% } %> 
+                        <% if (success && success != '' && success.length > 0) { %>
+    
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <p><%= success %></p>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+    
+                        <% } %> 
                     </div>
                     <div class="card-body">
                         <div class="row">
+                                
+                            <% if (customer.status === 0) { %>
+                                  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <strong>Tài khoản của bạn chưa được xác minh!</strong>
+                                    <a style="color: blue;" href="/customer/<%= customer.userId %>/verify">Xác minh tại đây!</a>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                  </div>
+                                  
+                            <% } else { %>
+
+                            <% } %> 
+
                             <div class="col-xl-3 col-12 col-sm-12">
                                 <label for="" class="form-label">Email</label>
                                 <input id="email" readonly type="text" class="form-control" value="<%= customer.email %>">
@@ -93,7 +118,6 @@
     <!-- Close admin-wrapper -->
     </div>
 
-
     <script type="module">
         import { loadProvince, loadDistrict, loadWard, firstLoad } from '/js/fetchAdress.js'
 
@@ -165,7 +189,6 @@
                             type: 'success', 
                             message: 'Thêm thành công'
                         })
-
                         setTimeout(hideAlert, 2000)      
                         setTimeout(() => {
                             location.reload();
@@ -227,7 +250,6 @@
                             type: 'success', 
                             message: 'Cập nhật thành công'
                         })
-
                         setTimeout(hideAlert, 2000)      
                         setTimeout(() => {
                             location.reload();
@@ -251,7 +273,6 @@
                             type: 'success', 
                             message: 'Xóa thành công'
                         })
-
                         setTimeout(hideAlert, 2000)      
                         setTimeout(() => {
                             location.reload();

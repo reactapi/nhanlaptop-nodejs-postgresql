@@ -112,7 +112,8 @@
                 type: 'post',
                 data: {
                     email,
-                    password
+                    password,
+                    goto: '<%- goto %>'
                 },
                 dataType: 'json',
                 success: function(result) {
@@ -126,7 +127,7 @@
                             desc: result.message || 'Đăng nhập thành công!'
                         })
                         setTimeout(() => {
-                            location.href = '/'
+                            location.href = result.goto ? result.goto : '/'
                         }, 2000)
                     } else {
                         showToast({

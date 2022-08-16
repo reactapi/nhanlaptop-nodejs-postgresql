@@ -15,21 +15,25 @@
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title">Cập nhật ảnh đại diện</h5>
+                        <div class="alert customize alert-block">
+                            <p></p>
+                        </div>
                         <% if (error && error != '' && error.length > 0) { %>
 
-                            <div class="alert alert-block alert-danger active">
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                 <p><%= error %></p>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
     
                         <% } %> 
                         <% if (success && success != '' && success.length > 0) { %>
     
-                            <div class="alert alert-block alert-success active">
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
                                 <p><%= success %></p>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
     
                         <% } %> 
-                        </p>
                     </div>
                     <div class="card-body">
                         <form enctype="multipart/form-data" action="" method="POST" id="form-avatar">

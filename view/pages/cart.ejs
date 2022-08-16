@@ -222,7 +222,7 @@
             const totalItemPrice = itemPrice * quantity
             const totalItemPriceFormat = new Intl.NumberFormat('de-DE').format(totalItemPrice)
 
-            cart.updateQuantityById({productId, quantity})
+            cart.updateQuantityById({productId, quantity, price: itemPrice})
 
             tdTotalItemPrice.innerText = `${totalItemPriceFormat}đ`
 

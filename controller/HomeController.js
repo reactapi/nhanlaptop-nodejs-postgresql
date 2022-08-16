@@ -86,15 +86,20 @@ class SiteController {
             let user = ''
             if (req.user) {
                 user = req.user
+                
+                if (parseInt(user.status) === 0) {
+                    req.flash('error', 'Tài khoản của bạn chưa được xác minh! Không thể đặt hàng!')
+                    return res.redirect(`/customer/${user.userId}`)
+                }
+
+                const data = await customerModel.getAllAddress(user.userId)
+                return res.render('pages/checkout', {
+                    user,
+                    address: data,
+                    helper
+                })
             } 
-
-            const data = await customerModel.getAllAddress(user.userId)
-
-            res.render('pages/checkout', {
-                user,
-                address: data,
-                helper
-            })
+            return res.redirect(`/auth/login?goto=${process.env.URL_SERVER}/gio-hang/thanh-toan`)
             
         } catch (error) {
             console.log(error)

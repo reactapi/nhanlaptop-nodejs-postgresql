@@ -131,7 +131,7 @@ class Customer {
 
             const { hashPassword, customerId } = data
 
-            const sql = `update customer set password = $1, code_reset_password = '' where customer_id = $2`
+            const sql = `update customer set password = $1, code_verify = '' where customer_id = $2`
             const result = await queryDatabase(sql, [hashPassword, customerId])
 
             return data
@@ -145,12 +145,12 @@ class Customer {
         
     }
 
-    async updateCodeToResetPassword(data) {
+    async updateCodeToVerify(data) {
         try {
 
             const { code, customerId } = data
 
-            const sql = `update customer set code_reset_password = $1 where customer_id = $2`
+            const sql = `update customer set code_verify = $1 where customer_id = $2`
             const result = await queryDatabase(sql, [code, customerId])
 
             return data
@@ -164,12 +164,12 @@ class Customer {
         
     }
 
-    async verifyCodeToResetPassword(data) {
+    async verifyCode(data) {
         try {
 
             const { code } = data
 
-            const sql = `select * from customer where code_reset_password = $1`
+            const sql = `select * from customer where code_verify = $1`
             const result = await queryDatabase(sql, [code])
             return result[0]
             
@@ -181,7 +181,6 @@ class Customer {
         }
         
     }
-
 
     async updateAvatar(data) {
         try {
@@ -212,6 +211,26 @@ class Customer {
             const sqlUpdate = `update customer set full_name = $1
                                 where customer_id = $2`
             const result1 = await queryDatabase(sqlUpdate, [name, customerId]) 
+
+            return data
+            
+        } catch (error) {
+            console.log(error)
+            return {
+                error
+            }
+        }
+        
+    }
+
+    async updateStatus(data) {
+        try {
+
+            const { customerId, status } = data
+
+            const sqlUpdate = `update customer set code_verify = '', status = $1
+                                where customer_id = $2`
+            const result1 = await queryDatabase(sqlUpdate, [status, customerId]) 
 
             return data
             

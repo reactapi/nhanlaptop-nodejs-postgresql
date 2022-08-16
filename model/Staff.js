@@ -40,7 +40,7 @@ class Staff {
 
             const start = (page - 1) * pageSize
 
-            const sql = `select * from administrator where role = 2 limit $1 offset $2`
+            const sql = `select * from administrator where role = 2 order by status desc limit $1 offset $2`
             const result =  await queryDatabase(sql, [pageSize, start])
             return result
             
@@ -72,6 +72,21 @@ class Staff {
             let sql = `select * from administrator where email = $1`
             const user = await queryDatabase(sql, [email])
             return user[0]
+
+        } catch (error) {
+            return {
+                error
+            }
+        }
+    }
+
+    async updateStatus({id, status}) {
+        try {
+
+            const sql = `update administrator set status = $1 where user_id = $2`
+            const result = await queryDatabase(sql, [status, id])
+
+            return id
 
         } catch (error) {
             return {

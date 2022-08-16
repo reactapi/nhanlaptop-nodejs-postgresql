@@ -31,11 +31,12 @@ export class CCart {
         localStorage.setItem('cart', JSON.stringify(this.products))
     }
 
-    updateQuantityById({productId, quantity}) {
+    updateQuantityById({productId, quantity, price}) {
 
         this.products.forEach((product) => {
             if (productId == product.productId) {
                 product.quantity = quantity
+                product.productPrice = price
                 return
             }
         })

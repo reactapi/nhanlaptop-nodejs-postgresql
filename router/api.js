@@ -10,10 +10,10 @@ const customerController = require('../controller/CustomerController')
 const orderController = require('../controller/OrderController')
 const categoryController = require('../controller/CategoryController')
 const staffController = require('../controller/StaffController')
+const adminController = require('../controller/AdminController')
 
 // Middleware
 const { isStaffApi, isAdminApi, isValidCustomerApi } = require('../middleware/index')
-const adminController = require('../controller/AdminController')
 
 router.get('/product/live-search', productController.handleLiveSearch)
 router.get('/product/:productId/check', productController.checkExistsProductId)
@@ -43,17 +43,17 @@ router.put('/customer/address/:id', customerController.updateAddress)
 router.delete('/customer/address/:id', customerController.deleteAddress)
 
 
-router.get('/order/revenue/getChart', isStaffApi, orderController.getRevenueForChart)
-router.get('/order/bestseller/getChart', isStaffApi, orderController.getBestSellerForChart)
-router.get('/order/getChart', isStaffApi, orderController.getOrderForChart)
+router.get('/order/revenue/getChart', isStaffApi, orderController.getRevenueLifeTime)
+router.get('/order/bestseller/getChart', isStaffApi, orderController.getBestSeller)
+router.get('/order/count-order/getChart', isStaffApi, orderController.getCountOrderLifeTime)
 
 router.put('/order/:id/status', isStaffApi, orderController.updateStatusOrder)
 router.get('/order/:id', orderController.getOrderById)
-router.get('/order', isStaffApi, orderController.getOrder)    
+router.get('/order', isStaffApi, orderController.getAllOrder)    
 router.post('/order', orderController.createOrder)  
 
 
-router.delete('/user/:id', isAdminApi, staffController.handleDeleteById)
+router.put('/user/:id/status', isAdminApi, staffController.handleUpdateAccountStatus)
 
 
 

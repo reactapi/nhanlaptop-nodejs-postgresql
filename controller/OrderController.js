@@ -1,11 +1,11 @@
 const {queryDatabase} = require('../model/database');
 const orderModel = require('../model/Order')
 const helper = require('../helper');
-const { transporter } = require('../services/nodemailer')
+const { transporter } = require('../config/nodemailer')
 
 class OrderController {
 
-    async getRevenueForChart(req, res) {
+    async getRevenueLifeTime(req, res) {
         try {
             const data = await orderModel.getRevenueLifeTime()
             
@@ -22,7 +22,7 @@ class OrderController {
         }
     }
 
-    async getBestSellerForChart(req, res) {
+    async getBestSeller(req, res) {
         try {
             const { limit } = req.query
             const data = await orderModel.findBestSellerProduct({limit: limit})
@@ -40,7 +40,7 @@ class OrderController {
         }
     }
 
-    async getOrderForChart(req, res) {
+    async getCountOrderLifeTime(req, res) {
         try {
             
             let sql = `select count(*) as count, DATE(created_at) as date from tblorder 
@@ -61,7 +61,7 @@ class OrderController {
         }
     }
 
-    async getOrder(req, res) {
+    async getAllOrder(req, res) {
         try {
             
             let user = ''

@@ -27,6 +27,7 @@
                                     <th>Email</th>
                                     <th>Họ và tên</th>
                                     <th>Avatar</th>
+                                    <th>Tình trạng</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -38,12 +39,24 @@
                                             <th><%= item['customer_id'] %></th>
                                             <td><%= item['email'] %></td>
                                             <td><%= item['full_name'] %></td>
-                                            <% if (item['avatar']) { %>
-                                                <td><img class="avatar" src="<%= item['avatar'] %>" alt=""></td>
-                                            <% } else { %>
-                                                <td><img class="avatar" src="<%= item['avatar_default'] %>" alt=""></td>
-
-                                            <% } %> 
+                                            <td>
+                                                <% if (item['avatar']) { %>
+                                                    <img class="avatar" src="<%= item['avatar'] %>" alt="">
+                                                <% } else { %>
+                                                    <img class="avatar" src="<%= item['avatar_default'] %>" alt="">
+                                                <% } %> 
+                                            </td>
+                                            <td>
+                                                <% if (item['status'] === 0) { %>
+                                                    <button class="btn btn-warning" title="Chưa xác minh">
+                                                        <i class="fa-solid fa-circle-exclamation"></i>
+                                                    </button>
+                                                <% } else { %>
+                                                    <button class="btn btn-success" title="Đã xác minh">
+                                                        <i class="fa-solid fa-circle-check"></i>
+                                                    </button>
+                                                <% } %> 
+                                            </td>
                                         </tr>
 
                                     <%  }) %>

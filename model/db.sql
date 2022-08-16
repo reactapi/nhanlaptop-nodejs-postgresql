@@ -139,7 +139,8 @@ CREATE TABLE customer (
   avatarDefault varchar(500) NOT NULL DEFAULT 'https://res.cloudinary.com/dbynglvwk/image/upload/v1650182653/NHANLAPTOP/istockphoto-666545204-612x612_yu3gcq.jpg',
   avatar varchar(500) DEFAULT NULL,
   public_id varchar(255) DEFAULT NULL,
-  role smallint NOT NULL DEFAULT '0'
+  role smallint NOT NULL DEFAULT '0',
+  status smallint NOT NULL DEFAULT '0',
   code_reset_password varchar(255) DEFAULT NULL,
 )  ;
 
@@ -164,10 +165,10 @@ CREATE TABLE laptop_specification (
   id SERIAL,
   product_id varchar(20) NOT NULL,
   cpu varchar(40) DEFAULT NULL,
-  cpuDetail varchar(60) DEFAULT NULL,
+  cpu_detail varchar(60) DEFAULT NULL,
   ram int DEFAULT NULL,
-  hardDriveSize varchar(20) DEFAULT NULL,
-  hardDriveDesc varchar(60) DEFAULT NULL,
+  hard_drive_size varchar(20) DEFAULT NULL,
+  hard_drive_desc varchar(60) DEFAULT NULL,
   graphics varchar(60) DEFAULT NULL,
   screen varchar(60) DEFAULT NULL,
   weight double precision DEFAULT NULL
@@ -177,7 +178,7 @@ CREATE TABLE laptop_specification (
 -- SQLINES DEMO *** table laptop_specification
 --
 
-INSERT INTO laptop_specification (id, product_id, cpu, cpuDetail, ram, hardDriveSize, hardDriveDesc, graphics, screen, weight) VALUES
+INSERT INTO laptop_specification (id, product_id, cpu, cpu_detail, ram, hard_drive_size, hard_drive_desc, graphics, screen, weight) VALUES
 (1, 'LTAC0001', 'AMD Ryzen 5', '5500U (6 nhân 12 luồng)', 8, '512GB SSD', 'PCIe® NVMe™ M.2', 'NVIDIA GeForce GTX 1650 4GB GDDR6', '15.6 inch FHD (1920 x 1080) 144Hz', 2.15),
 (2, 'LTLE0001', 'Intel Pentium', 'N5030', 4, '256GB SSD', '', 'Intel UHD Graphics', '11.6 inch HD (1366 x 768) TN', 1.2),
 (3, 'LTAC0002', 'Intel Core i5', '1035G1 1.0GHz up to 3.6GHz 6MB', 4, '256GB SSD', 'M.2 PCIE, 1x slot SATA3 2.5"', 'Intel UHD Graphics', '15.6 inch FHD (1920 x 1080), IPS, Acer ComfyView LCD, ', 1.7),
@@ -203,7 +204,7 @@ CREATE TABLE product (
   product_id varchar(20) NOT NULL,
   product_type smallint NOT NULL,
   slug varchar(255) NOT NULL,
-  categoryId int NOT NULL,
+  category_id int NOT NULL,
   name varchar(100) NOT NULL,
   brand int NOT NULL,
   thumbnail varchar(255) NOT NULL,
@@ -218,7 +219,7 @@ CREATE TABLE product (
 -- SQLINES DEMO *** table product
 --
 
-INSERT INTO product (product_id, product_type, slug, categoryId, name, brand, thumbnail, public_id, price, discount, created_at, status) VALUES
+INSERT INTO product (product_id, product_type, slug, category_id, name, brand, thumbnail, public_id, price, discount, created_at, status) VALUES
 ('LTAC0001', 1, 'acer-aspire-7-a715-42g-r05g', 4, 'Acer Aspire 7 A715 42G R05G', 1, 'https://res.cloudinary.com/dbynglvwk/image/upload/v1650349037/NHANLAPTOP/eqqyd3kyx60t5satma4o.jpg', 'NHANLAPTOP/eqqyd3kyx60t5satma4o', 21699000, 4, '2022-03-19 03:09:18', 1),
 ('LTAC0002', 1, 'acer-aspire-3-a315-56-37dv', 5, 'Acer Aspire 3 A315-56-37DV', 1, 'https://res.cloudinary.com/dbynglvwk/image/upload/v1641128689/Project-NHN-Computer-PHP/Laptop/58716_laptop_acer_aspire_3_a315_56_17_qruzug.jpg', 'Project-NHN-Computer-PHP/Laptop/58716_laptop_acer_aspire_3_a315_56_17_qruzug', 12599000, 2, NULL, 1),
 ('LTAC0003', 1, 'acer-gaming-predator-triton-300', 4, 'Acer Gaming Predator Triton 300', 1, 'https://res.cloudinary.com/dbynglvwk/image/upload/v1641386760/Project-NHN-Computer-PHP/Laptop/60632_laptop_acer_gaming_predator_triton_300_pt315_53_11_zyccno.jpg', 'Project-NHN-Computer-PHP/Laptop/60632_laptop_acer_gaming_predator_triton_300_pt315_53_11_zyccno', 49999000, 0, NULL, 1),
@@ -323,7 +324,7 @@ ALTER TABLE laptop_specification
 
 
 ALTER TABLE product
-  ADD CONSTRAINT product_ibfk_1 FOREIGN KEY (categoryId) REFERENCES category (id),
+  ADD CONSTRAINT product_ibfk_1 FOREIGN KEY (category_id) REFERENCES category (id),
   ADD CONSTRAINT product_ibfk_2 FOREIGN KEY (brand) REFERENCES brand (id);
 
 

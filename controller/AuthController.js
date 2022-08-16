@@ -2,7 +2,7 @@ const customerModel = require('../model/Customer')
 const helper = require('../helper');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const { transporter } = require('../services/nodemailer')
+const { transporter } = require('../config/nodemailer')
 
 class AuthController {
 
@@ -55,12 +55,16 @@ class AuthController {
 
     getLogin (req, res) {
         let user = ''
+
         if (req.user) {
             return res.redirect('back')
         } 
+        const { goto } = req.query
+
         res.render('pages/login', {
             user,
             helper,
+            goto,
             success: req.flash('success'),
             error: req.flash('error')
         })
@@ -68,8 +72,7 @@ class AuthController {
 
     async postLogin (req, res) {
         try {
-            const { email, password } = req.body
-
+            const { email, password, goto } = req.body
             const customer = await customerModel.findByEmail(email)
             
             if (customer) {
@@ -83,9 +86,8 @@ class AuthController {
                         httpOnly: true,
                         maxAge: 1000 * 60 * 60,
                     });
-                    return res.json({
-                        status: 'success'
-                    })
+
+                    return res.json({status: 'success', goto})
                 } else {
                     return res.json({
                         status: 'error',
@@ -133,12 +135,12 @@ class AuthController {
                 const customerId = customer['customer_id']
                 const code =  helper.randomString(50)
 
-                const result = await customerModel.updateCodeToResetPassword({
+                const result = await customerModel.updateCodeToVerify({
                     code: code,
                     customerId: customerId
                 })
 
-                const  { error } = result
+                const { error } = result
 
                 if (!error) {
 

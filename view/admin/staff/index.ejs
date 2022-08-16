@@ -35,6 +35,7 @@
                                     <th>Email</th>
                                     <th>Họ và tên</th>
                                     <th>Quyền</th>
+                                    <th>Tình trạng</th>
                                     <th>Hành động</th>
                                 </tr>
                             </thead>
@@ -51,7 +52,29 @@
                                             <td><%= item['email'] %></td>
                                             <td><%= item['full_name'] %></td>
                                             <td><%= role[item['role']] %></td>
-                                            <td><button data-id="<%= item['user_id'] %>" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal-delete">Delete</button></td>
+                                            <td>
+                                                <% if (item['status'] === 0) { %>
+                                                    <button class="btn btn-danger" title="Đã khóa">
+                                                        Đã khóa <i class="fa-solid fa-circle-exclamation"></i>
+                                                    </button>
+                                                <% } else { %>
+                                                    <button class="btn btn-success" title="Còn hoạt động">
+                                                       Còn hoạt động <i class="fa-solid fa-circle-check"></i>
+                                                    </button>
+                                                <% } %> 
+                                            </td>
+                                            <td>
+                                                <% if (item['status'] === 0) { %>
+                                                    <button data-id="<%= item['user_id'] %>" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-unblock">
+                                                        Kích hoạt tài khoản <i class="fa-solid fa-unlock"></i>
+                                                    </button>
+                                                <% } else { %>
+                                                    <button data-id="<%= item['user_id'] %>" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modal-block">
+                                                        Khóa tài khoản <i class="fa-solid fa-circle-xmark"></i>
+                                                    </button>
+                                                <% } %> 
+                                             
+                                            </td>
                                         </tr>
 
                                     <%  }) %>
@@ -59,7 +82,7 @@
                                 <%  } else { %>
                                 
                                     <tr>
-                                        <th>Chưa có khách hàng nào!</th>
+                                        <th>Chưa có nhân viên nào!</th>
                                     </tr>
                                     
                                 <% } %> 
@@ -76,20 +99,40 @@
     <!-- Close admin-wrapper -->
 </div>
 
-<!-- Modal Confirm Delete -->
-<div class="modal fade" id="modal-delete" aria-labelledby="exampleModalLabel">
+<!-- Modal Confirm UnBlock -->
+<div class="modal fade" id="modal-unblock" aria-labelledby="exampleModalLabel">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Xóa nhân viên?</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Kích hoạt tài khoản nhân viên?</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          Bạn có chắc muốn xóa nhân viên này không?
+          Bạn có chắc muốn kích hoạt tài khoản này không?
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-          <button type="button" class="btn btn-danger btn-confirm-delete">Xóa</button>
+          <button type="button" class="btn btn-danger btn-confirm-unblock">Kích hoạt</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+<!-- Modal Confirm Block -->
+<div class="modal fade" id="modal-block" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Khóa tài khoản nhân viên?</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Bạn có chắc muốn khóa tài khoản này không?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <button type="button" class="btn btn-danger btn-confirm-block">Khóa</button>
         </div>
       </div>
     </div>
@@ -98,40 +141,79 @@
     <%- include('../footer') %>
 
     <script>
-        const modalDelete = document.getElementById('modal-delete')
-        const btnConfirmDelete = document.querySelector('.btn-confirm-delete')
+        const modalUnBlock = document.getElementById('modal-unblock')
+        const modalBlock = document.getElementById('modal-block')
+        const btnConfirmUnBlock = document.querySelector('.btn-confirm-unblock')
+        const btnConfirmBlock = document.querySelector('.btn-confirm-block')
 
-        modalDelete.addEventListener('show.bs.modal', function (event) {
+        // unblock
+        modalUnBlock.addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget
         
-            const categoryId = button.getAttribute('data-id')
+            const staffId = button.getAttribute('data-id')
 
-            btnConfirmDelete.setAttribute('data-id', categoryId)
-
-        })
-
-        btnConfirmDelete.addEventListener('click', function() {
-            const categoryId = this.getAttribute('data-id')
-            callApiDeleteStaff(categoryId)
+            btnConfirmUnBlock.setAttribute('data-id', staffId)
 
         })
 
-        function callApiDeleteStaff(userId) {
-        $.ajax({
-            url: `/api/v1/user/${userId}`,
-            type: 'delete',
-            dataType: 'json',
-            success: function(result) {
-                console.log(result)
-                if (result.status == 'success') {
-                    alert('Đã xóa thành công')
-                    location.reload()
-                } else {
-                    alert('Thất bại')
+        btnConfirmUnBlock.addEventListener('click', function() {
+            const staffId = this.getAttribute('data-id')
+            callApiUnBlockStaff(staffId)
+
+        })
+
+        //  block
+        modalBlock.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget
+            const staffId = button.getAttribute('data-id')
+            btnConfirmBlock.setAttribute('data-id', staffId)
+        })
+
+        btnConfirmBlock.addEventListener('click', function() {
+            const staffId = this.getAttribute('data-id')
+            callApiBlockStaff(staffId)
+
+        })
+
+        function callApiUnBlockStaff(userId) {
+            $.ajax({
+                url: `/api/v1/user/${userId}/status`,
+                type: 'put',
+                data: {
+                    status: 1
+                },
+                dataType: 'json',
+                success: function(result) {
+                    console.log(result)
+                    if (result.status == 'success') {
+                        alert('Kích hoạt tài khoản thành công!')
+                        location.reload()
+                    } else {
+                        alert('Thất bại')
+                    }
                 }
-            }
-        })
-    }
+            })
+        }
+
+        function callApiBlockStaff(userId) {
+            $.ajax({
+                url: `/api/v1/user/${userId}/status`,
+                type: 'put',
+                data: {
+                    status: 0
+                },
+                dataType: 'json',
+                success: function(result) {
+                    console.log(result)
+                    if (result.status == 'success') {
+                        alert('Khóa tài khoản thành công!')
+                        location.reload()
+                    } else {
+                        alert('Thất bại')
+                    }
+                }
+            })
+        }
 
     </script>
 

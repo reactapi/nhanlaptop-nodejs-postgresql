@@ -2,7 +2,7 @@ const {queryDatabase} = require('../model/database');
 const productModel = require('../model/Product')
 const orderModel = require('../model/Order')
 const helper = require('../helper');
-const { cloudinary, uploadToCloudinary, deleteCloudinary } = require('../services/cloudinary')
+const { cloudinary, uploadToCloudinary, deleteCloudinary } = require('../config/cloudinary')
 
 
 class ProductController {
@@ -421,15 +421,7 @@ class ProductController {
     async handleAddProduct(req, res) {
 
         try {
-
-            const { productId, productType, category, brand, productName, productSlug, productPrice, productDiscount,
-                productStatus } = req.body
-            
-            const newProduct = {
-                productId, productType, category, brand, productName, 
-                productSlug, productPrice, productDiscount,
-                productStatus
-            }
+            const product = req.body
 
             const file = req.file
             const thumbnailCloudinary = await uploadToCloudinary(cloudinary, file.path, {folder: 'NHANLAPTOP'})
@@ -437,32 +429,12 @@ class ProductController {
             const  { secure_url, public_id } = thumbnailCloudinary
             if (secure_url && public_id) {
 
-                newProduct.secure_url = secure_url
-                newProduct.public_id = public_id
+                product.secure_url = secure_url
+                product.public_id = public_id
            
             }
 
-            if (productType == 1) {
-                const { productCpu, productCpuDetail, productHardDrive, productHardDriveDetail,
-                    productRam, productGraphics, productScreen, productWeight } = req.body
-                
-                newProduct.productCpu = productCpu
-                newProduct.productCpuDetail = productCpuDetail
-                newProduct.productHardDrive = productHardDrive
-                newProduct.productHardDriveDetail = productHardDriveDetail
-                newProduct.productRam = productRam
-                newProduct.productGraphics = productGraphics
-                newProduct.productScreen = productScreen
-                newProduct.productWeight = productWeight
-
-                
-            } else  {
-                const { description, info } = req.body
-                newProduct.description = description
-                newProduct.info = info
-            }
-
-            const result = await productModel.create(newProduct)
+            const result = await productModel.create(product)
 
             const  { error } = result
 
@@ -474,8 +446,6 @@ class ProductController {
                 return res.redirect('/nhanlaptop-admin/product')
             }
 
-            
-            
         } catch (error) {
             req.flash('error', 'Thêm sản phẩm thất bại!')
             return res.redirect('/nhanlaptop-admin/product')
@@ -559,7 +529,7 @@ class ProductController {
 
     async handleDeleteProductById(req, res) {
         try {
-            const productId = req.params.productId
+            const { productId } = req.params
             const sql = `select product.public_id from product where product_id = $1`
             const result = await queryDatabase(sql, [productId])
             const { public_id } = result[0]

@@ -55,8 +55,8 @@
                                 <td><%= helper.formatPrice(item['price']) %>đ</td>
                                 <td><%= helper.formatDate(item['created_at']) %></td>
                                 <td><%= item['discount'] %> </td>
-                                <td><a href="product/update/<%= item['product_id'] %>"  class="btn btn-primary">Update</a></td>
-                                <td><button data-id="<%= item['product_id'] %>" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal-delete">Delete</button></td>
+                                <td><a href="product/update/<%= item['product_id'] %>" class="btn btn-primary"><i class="fa-solid fa-pen-to-square"></i></a></td>
+                                <td><button data-id="<%= item['product_id'] %>" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal-delete"><i class="fa-solid fa-trash"></i></button></td>
                             </tr>
 
                         <% }) %> 

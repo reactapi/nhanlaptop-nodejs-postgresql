@@ -18,7 +18,8 @@ async function getAccountLoggedIn(req, res, next) {
                 fullName: customer['full_name'],
                 email: customer['email'],
                 role: customer['role'],
-                avatar: customer['avatar']
+                avatar: customer['avatar'],
+                status: customer['status'],
             }
         } else {
             sql = `select * from administrator where user_id = $1`
